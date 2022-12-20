@@ -39,7 +39,7 @@ namespace DisprzTraining.Tests.UnitTests
             var SystemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var okResult = await SystemUnderTest.GetAllAppointments() as OkObjectResult;
-            var resultList = Assert.IsType<List<Appointment>>(okResult.Value);
+            var resultList = Assert.IsType<List<Appointment>>(okResult?.Value);
             
             //Assert
             Assert.Equal(0,resultList.Count);
@@ -110,9 +110,7 @@ namespace DisprzTraining.Tests.UnitTests
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
             var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
-            Mock.Setup(x=>x.AppointmentConflictCheck(testItem)).ReturnsAsync(false);
-            // Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
-            
+            Mock.Setup(x=>x.AppointmentConflictCheck(testItem)).ReturnsAsync(false); 
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var createdResult = await systemUnderTest.CreateAppointment(testItem);
@@ -128,7 +126,6 @@ namespace DisprzTraining.Tests.UnitTests
             var Mock = new Mock<IAppointmentsBL>();
             var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
             Mock.Setup(x=>x.AppointmentConflictCheck(testItem)).ReturnsAsync(true);
-            // Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var conflictResult = await systemUnderTest.CreateAppointment(testItem);
@@ -171,11 +168,11 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
-             var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
-            Mock.Setup(service => service.UpdateAppointment(new Guid(), testItem)).ReturnsAsync(true);
+             var testItem = new Appointment() {Id=new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
+            Mock.Setup(service => service.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
-            var okResult = await systemUnderTest.UpdateAppointment(new Guid(), testItem);
+            var okResult = await systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), testItem);
             //Assert
             Assert.IsType<OkResult>(okResult);
         }
@@ -185,7 +182,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
-            var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
+            var testItem = new Appointment() {Id=new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
             Mock.Setup(service => service.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), testItem)).ReturnsAsync(false);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
