@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-// using DisprzTraining.Models;
 using DisprzTraining.Data;
 using Appointments;
 
@@ -14,9 +13,13 @@ namespace DisprzTraining.DataAccess
         {
             return Task.FromResult(AppointmentStore.AppointmentList);
         }
-        public Task<List<Appointment>> GetAppointments(string eventDate)
+        public Task<List<Appointment>> GetAppointments(string appointmentDate)
         {
-            return Task.FromResult(AppointmentStore.AppointmentList.Where(x => x.AppointmentDate.Equals(eventDate)).ToList());
+            return Task.FromResult(AppointmentStore.AppointmentList.Where(appointment => appointment.AppointmentDate.Equals(appointmentDate)).ToList());
+        }
+        public Task<List<Appointment>> GetAppointmentById(Guid id)
+        {
+            return Task.FromResult(AppointmentStore.AppointmentList.Where(appointment => appointment.Id==id).ToList());
         }
 
 

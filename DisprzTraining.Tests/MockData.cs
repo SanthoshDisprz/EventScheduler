@@ -10,10 +10,10 @@ namespace DisprzTraining.Tests
         { 
           new Appointment
             {
-              Id=1,
+              Id=new Guid(),
               AppointmentDate="2022-12-12",
               AppointmentDescription="test",
-              AppointmentEndTime=DateTime.Now,
+              AppointmentEndTime=new DateTime(2022, 10, 10, 10, 10, 10),
               AppointmentStartTime=DateTime.Today,
               AppointmentTitle="test"
             }

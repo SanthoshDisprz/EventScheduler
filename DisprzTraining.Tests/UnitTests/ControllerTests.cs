@@ -11,9 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using DisprzTraining.Data;
 using FluentAssertions;
 
-namespace DisprzTraining.Tests
+namespace DisprzTraining.Tests.UnitTests
 {
-    public class AppointmentServiceTest
+    public class ControllerTests
     {
         [Fact]
         public async Task GetAllAppointments_OnSuccess_ReturnsOkResult()
@@ -24,14 +24,30 @@ namespace DisprzTraining.Tests
             var SystemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var okResult = await SystemUnderTest.GetAllAppointments() as OkObjectResult;
+  
+            
             //Assert
             Assert.IsType<OkObjectResult>(okResult);
             Assert.IsType<List<Appointment>>(okResult.Value);
         }
+        [Fact]
+        public async Task GetAllAppointments_OnSuccess_ReturnsAllAppointments()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsBL>();
+            Mock.Setup(service => service.GetAllAppointments()).ReturnsAsync(new List<Appointment>());
+            var SystemUnderTest = new AppointmentsController(Mock.Object);
+            //Act
+            var okResult = await SystemUnderTest.GetAllAppointments() as OkObjectResult;
+            var resultList = Assert.IsType<List<Appointment>>(okResult.Value);
+            
+            //Assert
+            Assert.Equal(0,resultList.Count);
+        }
 
 
         [Fact]
-        public async Task GetAppointments_OnSuccess_ReturnsOkResult()
+        public async Task GetAppointmentsByDate_OnSuccess_ReturnsOkResult()
         {
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
@@ -45,18 +61,46 @@ namespace DisprzTraining.Tests
             Assert.IsType<List<Appointment>>(okResult.Value);
         }
 
+
         [Fact]
-        public async Task GetAppointments_WhenNoAppointments_ReturnsNotFound()
+        public async Task GetAppointmentsByDate_OnSuccess_MatchResult()
         {
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
-            Mock.Setup(service => service.GetAppointments("2022-12-12")).ReturnsAsync(new List<Appointment>());
+            Mock.Setup(service => service.GetAppointments("2022-12-12")).ReturnsAsync(MockData.TestData());
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
-            var notFoundResult = await systemUnderTest.GetAppointments("2022-12-12");
+            var okResult = await systemUnderTest.GetAppointments("2022-12-12");
+            var ObjectResult=(OkObjectResult) okResult;
+            //Assert
+            ObjectResult.Value.Should().BeEquivalentTo(MockData.TestData());
+        }
+        [Fact]
+        public async Task GetAppointmentById_OnSuccess_MatchResult()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsBL>();
+            Mock.Setup(service => service.GetAppointmentById(new Guid())).ReturnsAsync(MockData.TestData());
+            var systemUnderTest = new AppointmentsController(Mock.Object);
+            //Act
+            var okResult = await systemUnderTest.GetAppointmentById(new Guid());
+            var ObjectResult=(OkObjectResult) okResult;
+            //Assert
+            ObjectResult.Value.Should().BeEquivalentTo(MockData.TestData());
+        }
+        [Fact]
+        public async Task GetAppointmentId_OnSuccess_ReturnsOkResult()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsBL>();
+            Mock.Setup(service => service.GetAppointmentById(new Guid())).ReturnsAsync(MockData.TestData());
+            var systemUnderTest = new AppointmentsController(Mock.Object);
+            //Act
+            var okResult = await systemUnderTest.GetAppointmentById(new Guid()) as OkObjectResult;
 
             //Assert
-            Assert.IsType<NotFoundResult>(notFoundResult);
+            Assert.IsType<OkObjectResult>(okResult);
+            Assert.IsType<List<Appointment>>(okResult.Value);
         }
 
 
@@ -66,7 +110,9 @@ namespace DisprzTraining.Tests
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
             var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
-            Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
+            Mock.Setup(x=>x.AppointmentConflictCheck(testItem)).ReturnsAsync(false);
+            // Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
+            
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var createdResult = await systemUnderTest.CreateAppointment(testItem);
@@ -81,7 +127,8 @@ namespace DisprzTraining.Tests
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
             var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
-            Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(false);
+            Mock.Setup(x=>x.AppointmentConflictCheck(testItem)).ReturnsAsync(true);
+            // Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var conflictResult = await systemUnderTest.CreateAppointment(testItem);
@@ -90,19 +137,20 @@ namespace DisprzTraining.Tests
             Assert.IsType<ConflictResult>(conflictResult);
         }
 
+
         [Fact]
-        public async Task RemoveAppointment_WhenExistingIdPassed_ReturnsOk()
+        public async Task RemoveAppointment_WhenExistingIdPassed_ReturnsNoContentResult()
         {
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
             var systemUnderTest = new AppointmentsController(Mock.Object);
-            Mock.Setup(service => service.DeleteAppointment(1)).ReturnsAsync(true);
+            Mock.Setup(service => service.DeleteAppointment(new Guid())).ReturnsAsync(true);
             //Act
 
-            var okResult = await systemUnderTest.DeleteAppointment(1);
+            var noContentResult = await systemUnderTest.DeleteAppointment(new Guid());
 
             //Assert
-            Assert.IsType<OkResult>(okResult);
+            Assert.IsType<NoContentResult>(noContentResult);
         }
 
         [Fact]
@@ -110,10 +158,10 @@ namespace DisprzTraining.Tests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
-            Mock.Setup(service => service.DeleteAppointment(10)).ReturnsAsync(false);
+            Mock.Setup(service => service.DeleteAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"))).ReturnsAsync(false);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
-            var okResult = await systemUnderTest.DeleteAppointment(10);
+            var okResult = await systemUnderTest.DeleteAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"));
             //Assert
             Assert.IsType<NotFoundResult>(okResult);
         }
@@ -124,10 +172,10 @@ namespace DisprzTraining.Tests
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
              var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
-            Mock.Setup(service => service.UpdateAppointment(1, testItem)).ReturnsAsync(true);
+            Mock.Setup(service => service.UpdateAppointment(new Guid(), testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
-            var okResult = await systemUnderTest.UpdateAppointment(1, testItem);
+            var okResult = await systemUnderTest.UpdateAppointment(new Guid(), testItem);
             //Assert
             Assert.IsType<OkResult>(okResult);
         }
@@ -138,16 +186,12 @@ namespace DisprzTraining.Tests
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
             var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
-            Mock.Setup(service => service.UpdateAppointment(1, testItem)).ReturnsAsync(false);
+            Mock.Setup(service => service.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), testItem)).ReturnsAsync(false);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
-            var notFoundResult = await systemUnderTest.UpdateAppointment(1, testItem);
+            var notFoundResult = await systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), testItem);
             //Assert
             Assert.IsType<NotFoundResult>(notFoundResult);
         }
-
-
-
-
     }
 }

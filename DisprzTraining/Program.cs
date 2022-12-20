@@ -2,6 +2,7 @@
 using System.Text.Json;
 using DisprzTraining.Business;
 using DisprzTraining.DataAccess;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers()
@@ -38,3 +39,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+public partial class Program { }

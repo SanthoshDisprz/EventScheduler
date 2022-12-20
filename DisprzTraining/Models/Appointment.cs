@@ -5,7 +5,7 @@ namespace Appointments
     public class Appointment
     {
         [Required]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         [Required]
         public string? AppointmentTitle { get; set; }
         [Required]

@@ -20,24 +20,26 @@ namespace DisprzTraining.Controllers
         }
 
 
-        [HttpGet(Name = "Get All Appointments")]
+        [HttpGet("",Name = "Get All Appointments")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllAppointments()
         {
             return Ok(await _appointmentsBL.GetAllAppointments());
         }
 
-        [HttpGet("{eventDate}", Name ="Get Appointments by Date")]
+        [HttpGet("date/{appointmentDate}", Name ="Get Appointments by Date")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAppointments(string eventDate)
+        public async Task<IActionResult> GetAppointments(string appointmentDate)
         {
-            var appointments = await _appointmentsBL.GetAppointments(eventDate);
-            if(appointments.Count>0){
-                return Ok(appointments);
-            }
-            return NotFound();    
+            var appointments = await _appointmentsBL.GetAppointments(appointmentDate);
+            return Ok(appointments);   
+        }
+        [HttpGet("{id}", Name ="Get Appointment by Id")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAppointmentById(Guid id)
+        {
+            var appointment = await _appointmentsBL.GetAppointmentById(id);
+            return Ok(appointment);   
         }
 
 
@@ -47,21 +49,22 @@ namespace DisprzTraining.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> CreateAppointment([FromBody]Appointment appointment)
         {
-            var result = await _appointmentsBL.CreateAppointment(appointment);
-            if(result){
-            return Created("Appointment Created", appointment);
+            var result = await _appointmentsBL.AppointmentConflictCheck(appointment);
+            if(!result){
+                await _appointmentsBL.CreateAppointment(appointment);
+            return Created("Appointment Created", true);
             }
             return Conflict();
         }
 
         [HttpDelete("{id}", Name = "Remove Appointment")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteAppointment(int id)
+        public async Task<IActionResult> DeleteAppointment(Guid id)
         {
             var result= await _appointmentsBL.DeleteAppointment(id);
             if(result){
-                return Ok();
+                return NoContent();
             }
             return NotFound();
         }
@@ -69,12 +72,17 @@ namespace DisprzTraining.Controllers
         [HttpPut("{id}", Name = "Update Appointment")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateAppointment(int id, [FromBody]Appointment appointment)
+        public async Task<IActionResult> UpdateAppointment(Guid id, [FromBody]Appointment appointment)
         {
+            var conflict = await _appointmentsBL.AppointmentConflictCheck(appointment);
             var result = await _appointmentsBL.UpdateAppointment(id, appointment);
-            if(result){
+            if(result && !conflict){
                 return Ok();
             }
+            else if(conflict){
+                return Conflict();
+            }
+            
             return NotFound();
         }
 
