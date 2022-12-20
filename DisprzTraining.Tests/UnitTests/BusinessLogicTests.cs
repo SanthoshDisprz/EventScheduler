@@ -74,7 +74,7 @@ namespace DisprzTraining.Tests.UnitTests
             //Arrange
              var Mock = new Mock<IAppointmentDAL>();
              var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = DateTime.Now, AppointmentEndTime = DateTime.Now.AddHours(1) };
-            // Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
+            Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act
             var result = await systemUnderTest.AppointmentConflictCheck(testItem);
@@ -87,7 +87,7 @@ namespace DisprzTraining.Tests.UnitTests
             //Arrange
              var Mock = new Mock<IAppointmentDAL>();
              var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime=new DateTime(2022, 09, 10, 10, 10, 10), AppointmentEndTime=new DateTime(2022, 09, 10, 20, 10, 10) };
-            // Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
+            Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act
             var result = await systemUnderTest.AppointmentConflictCheck(testItem);
@@ -100,7 +100,7 @@ namespace DisprzTraining.Tests.UnitTests
             //Arrange
              var Mock = new Mock<IAppointmentDAL>();
              var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime=DateTime.Now, AppointmentEndTime=new DateTime(2022, 09, 10, 20, 10, 10) };
-            // Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
+            Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act
             var result = async () =>{await systemUnderTest.AppointmentConflictCheck(testItem);};
@@ -115,7 +115,7 @@ namespace DisprzTraining.Tests.UnitTests
             //Arrange
              var Mock = new Mock<IAppointmentDAL>();
              var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime=new DateTime(2022, 09, 10, 20, 10, 10), AppointmentEndTime=new DateTime(2022, 09, 10, 20, 10, 10) };
-            // Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
+            Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act
             var result = async () =>{await systemUnderTest.AppointmentConflictCheck(testItem);};
