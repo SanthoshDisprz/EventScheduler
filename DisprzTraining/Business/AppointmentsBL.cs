@@ -27,7 +27,7 @@ namespace DisprzTraining.Business
             return await _appointmentdal.GetAppointments(appointmentDate);
             }
             else{
-                throw new Exception("Invalid Input Type");
+                throw new Exception("Invalid Input Type for Appointment Date. Appointment Date should be of Date format");
             }
         }
         public async Task<List<Appointment>> GetAppointmentById(Guid id)
@@ -50,7 +50,15 @@ namespace DisprzTraining.Business
         }
         public async Task<bool> CreateAppointment(Appointment appointment)
         {
-           return await _appointmentdal.CreateAppointment(appointment);
+            DateTime dateTime;
+            if(DateTime.TryParse(appointment.AppointmentDate, out dateTime))
+            {
+            return await _appointmentdal.CreateAppointment(appointment);
+            }
+            else{
+                throw new Exception("Invalid Input Type for Appointment Date. Appointment Date should be of Date format");
+            }
+           
         }
         
         public async Task<bool> DeleteAppointment(Guid id)

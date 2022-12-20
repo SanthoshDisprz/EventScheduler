@@ -53,7 +53,7 @@ namespace DisprzTraining.Tests.UnitTests
             var result = async () =>{await systemUnderTest.GetAppointments("20220706");};
             //Assert
            await Assert.ThrowsAsync<Exception>(result);
-           await result.Should().ThrowAsync<Exception>().WithMessage("Invalid Input Type");
+           await result.Should().ThrowAsync<Exception>().WithMessage("Invalid Input Type for Appointment Date. Appointment Date should be of Date format");
             
         }
         [Fact]
@@ -114,7 +114,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
              var Mock = new Mock<IAppointmentDAL>();
-             var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime=new DateTime(2022, 09, 10, 20, 10, 10), AppointmentEndTime=new DateTime(2022, 09, 10, 20, 10, 10) };
+             var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime=new DateTime(2022, 09, 10, 20, 10, 10), AppointmentEndTime=new DateTime(2022, 09, 10, 20, 10, 10) };
             Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act
@@ -126,11 +126,11 @@ namespace DisprzTraining.Tests.UnitTests
         }
         
         [Fact]
-        public async Task CreateAppointment_WhenCalled_ReturnsTrue()
+        public async Task CreateAppointment_WhenValidDatePassed_ReturnsTrue()
         {
             //Arrange
              var Mock = new Mock<IAppointmentDAL>();
-             var testItem = new Appointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
+             var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
             Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act
@@ -138,10 +138,24 @@ namespace DisprzTraining.Tests.UnitTests
             //Assert
             Assert.True(result);
         }
+        [Fact]
+        public async Task CreateAppointment_WhenInValidDatePassed_ThrowsException()
+        {
+            //Arrange
+             var Mock = new Mock<IAppointmentDAL>();
+             var testItem = new Appointment() { AppointmentDate = "20220309", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
+            Mock.Setup(service => service.CreateAppointment(testItem)).ReturnsAsync(true);
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
+            //Act
+            var result =async()=> {await systemUnderTest.CreateAppointment(testItem);};
+            //Assert
+            await Assert.ThrowsAsync<Exception>(result);
+            await result.Should().ThrowAsync<Exception>().WithMessage("Invalid Input Type for Appointment Date. Appointment Date should be of Date format");
+        }
         
 
         [Fact]
-         public async Task DeleteAppointment_WhenExistingIdPassed_ReturnsTrue()
+        public async Task DeleteAppointment_WhenExistingIdPassed_ReturnsTrue()
         {
             //Arrange
             var Mock = new Mock<IAppointmentDAL>();
@@ -156,7 +170,7 @@ namespace DisprzTraining.Tests.UnitTests
             Assert.True(result);
         }
         [Fact]
-         public async Task DeleteAppointment_WhenNotExistingIdPassed_ReturnsFalse()
+        public async Task DeleteAppointment_WhenNotExistingIdPassed_ReturnsFalse()
         {
             //Arrange
             var Mock = new Mock<IAppointmentDAL>();

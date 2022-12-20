@@ -131,7 +131,7 @@ namespace DisprzTraining.Tests.UnitTests
             var conflictResult = await systemUnderTest.CreateAppointment(testItem);
 
             //Assert
-            Assert.IsType<ConflictResult>(conflictResult);
+            Assert.IsType<ConflictObjectResult>(conflictResult);
         }
 
 
@@ -160,7 +160,7 @@ namespace DisprzTraining.Tests.UnitTests
             //Act
             var okResult = await systemUnderTest.DeleteAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"));
             //Assert
-            Assert.IsType<NotFoundResult>(okResult);
+            Assert.IsType<NotFoundObjectResult>(okResult);
         }
 
         [Fact]
@@ -188,7 +188,7 @@ namespace DisprzTraining.Tests.UnitTests
             //Act
             var notFoundResult = await systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), testItem);
             //Assert
-            Assert.IsType<NotFoundResult>(notFoundResult);
+            Assert.IsType<NotFoundObjectResult>(notFoundResult);
         }
     }
 }

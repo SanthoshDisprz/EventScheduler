@@ -53,7 +53,7 @@ namespace DisprzTraining.Controllers
             var result = await _appointmentsBL.AppointmentConflictCheck(appointment);
             if(!result){
                 await _appointmentsBL.CreateAppointment(appointment);
-            return Created("Appointment Created", true);
+            return Created("~api/Appointments", true);
             }
             return Conflict(new ErrorResponse(){StatusCode=409, ErrorMessage="Appointment Conflict Occured."});
         }
