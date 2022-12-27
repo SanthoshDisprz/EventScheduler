@@ -494,3 +494,8 @@ C:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining\obj\Debug\net7.0\s
 C:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining\obj\Debug\net7.0\DisprzTraining.csproj.CopyComplete
 C:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining\obj\Debug\net7.0\DisprzTraining.genruntimeconfig.cache
 C:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining\obj\Debug\net7.0\ref\DisprzTraining.dll
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining\bin\Debug\net7.0\System.Web.Cors.dll
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining\bin\Debug\net7.0\System.Net.Http.Formatting.dll
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining\bin\Debug\net7.0\System.Web.Http.dll
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining\bin\Debug\net7.0\System.Web.Http.Cors.dll
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll

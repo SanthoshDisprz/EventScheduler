@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using DisprzTraining.Data;
 using FluentAssertions;
 using DisprzTraining.DataAccess;
+using DisprzTraining.Models;
 
 namespace DisprzTraining.Tests.UnitTests
 {
@@ -31,7 +32,7 @@ namespace DisprzTraining.Tests.UnitTests
         public async Task GetAppointmentsByDate_WhenCalled_ReturnsList()
         {
             //Act
-            var result = await systemUnderTest.GetAppointments("2022-03-03");
+            var result = await systemUnderTest.GetAppointmentsByDate("2022-03-03");
             //Assert
             Assert.IsType<List<Appointment>>(result);
         }
@@ -48,7 +49,7 @@ namespace DisprzTraining.Tests.UnitTests
         public async Task CreateAppointmentDAL_WhenCalled_ReturnsTrue()
         {
             //Arrange
-            var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
+            var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartDateTime = new DateTime().ToLocalTime(), AppointmentEndDateTime = DateTime.Now.AddHours(1) };
             //Act
             var result = await systemUnderTest.CreateAppointment(testItem);
             //Assert
@@ -58,7 +59,7 @@ namespace DisprzTraining.Tests.UnitTests
         public async Task DeleteAppointmentDAL_WhenCalled_ReturnsTrue()
         {
             //Arrange
-            var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
+            var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartDateTime = new DateTime().ToLocalTime(), AppointmentEndDateTime = DateTime.Now.AddHours(1) };
             //Act
             var result = await systemUnderTest.DeleteAppointment(testItem);
             //Assert
@@ -68,8 +69,8 @@ namespace DisprzTraining.Tests.UnitTests
         public async Task UpdateAppointmentDAL_WhenCalled_ReturnsTrue()
         {
             //Arrange
-            var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
-            var UpdatedTestItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "sss", AppointmentTitle = "sss", AppointmentStartTime = new DateTime().ToLocalTime(), AppointmentEndTime = DateTime.Now.AddHours(1) };
+            var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartDateTime = new DateTime().ToLocalTime(), AppointmentEndDateTime = DateTime.Now.AddHours(1) };
+            var UpdatedTestItem = new UpdateAppointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "sss", AppointmentTitle = "sss", AppointmentStartDateTime = new DateTime().ToLocalTime(), AppointmentEndDateTime = DateTime.Now.AddHours(1) };
             //Act
             var result = await systemUnderTest.UpdateAppointment(testItem, UpdatedTestItem);
             //Assert

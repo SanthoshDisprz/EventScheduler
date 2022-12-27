@@ -26,7 +26,7 @@ namespace DisprzTraining.Tests.IntegrationTests
             //Arrange
             var client = _factory.CreateClient();
             //Act
-            var response =await client.GetAsync("api/Appointments");
+            var response =await client.GetAsync("api/appointments");
             //Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

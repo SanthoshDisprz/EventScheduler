@@ -13,8 +13,8 @@ namespace DisprzTraining.Tests
               Id=new Guid(),
               AppointmentDate="2022-12-12",
               AppointmentDescription="test",
-              AppointmentEndTime=new DateTime(2022, 10, 10, 10, 10, 10),
-              AppointmentStartTime=DateTime.Today,
+              AppointmentEndDateTime=new DateTime(2022, 10, 10, 10, 10, 10),
+              AppointmentStartDateTime=DateTime.Today,
               AppointmentTitle="test"
             }
         };

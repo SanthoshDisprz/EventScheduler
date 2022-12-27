@@ -954,3 +954,8 @@ c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining.Tests\bin\Debug\ne
 c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining.Tests\bin\Debug\net7.0\Microsoft.AspNetCore.Mvc.Testing.dll
 c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining.Tests\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
 c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining.Tests\obj\Debug\net7.0\MvcTestingAppManifest.json
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining.Tests\bin\Debug\net7.0\System.Web.Cors.dll
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining.Tests\bin\Debug\net7.0\System.Net.Http.Formatting.dll
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining.Tests\bin\Debug\net7.0\System.Web.Http.dll
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining.Tests\bin\Debug\net7.0\System.Web.Http.Cors.dll
+c:\Users\santhosh.t_disprz\Desktop\CalendarApp\DisprzTraining.Tests\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll

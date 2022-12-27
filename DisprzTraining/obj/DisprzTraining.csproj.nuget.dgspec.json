@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj": {}
+    "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj": {}
   },
   "projects": {
-    "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj": {
+    "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj",
+        "projectUniqueName": "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj",
         "projectName": "DisprzTraining",
-        "projectPath": "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj",
+        "projectPath": "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj",
         "packagesPath": "C:\\Users\\santhosh.t_disprz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\obj\\",
+        "outputPath": "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\santhosh.t_disprz\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -38,6 +38,10 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "Microsoft.AspNet.WebApi.Cors": {
+              "target": "Package",
+              "version": "[5.2.9, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[7.0.0, )"

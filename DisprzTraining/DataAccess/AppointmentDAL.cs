@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DisprzTraining.Data;
 using Appointments;
+using DisprzTraining.Models;
 
 namespace DisprzTraining.DataAccess
 {
@@ -13,7 +14,7 @@ namespace DisprzTraining.DataAccess
         {
             return Task.FromResult(AppointmentStore.AppointmentList);
         }
-        public Task<List<Appointment>> GetAppointments(string appointmentDate)
+        public Task<List<Appointment>> GetAppointmentsByDate(string appointmentDate)
         {
             return Task.FromResult(AppointmentStore.AppointmentList.Where(appointment => appointment.AppointmentDate.Equals(appointmentDate)).ToList());
         }
@@ -34,12 +35,12 @@ namespace DisprzTraining.DataAccess
             AppointmentStore.AppointmentList.Remove(appointment);
             return Task.FromResult(true);
         }
-        public Task<bool> UpdateAppointment(Appointment appointmentToBeUpdated,Appointment appointment)
+        public Task<bool> UpdateAppointment(Appointment appointmentToBeUpdated, UpdateAppointment appointment)
         {
             appointmentToBeUpdated.AppointmentDate=appointment.AppointmentDate;
             appointmentToBeUpdated.AppointmentTitle=appointment.AppointmentTitle;
-            appointmentToBeUpdated.AppointmentStartTime=appointment.AppointmentStartTime;
-            appointmentToBeUpdated.AppointmentEndTime=appointment.AppointmentEndTime;
+            appointmentToBeUpdated.AppointmentStartDateTime=appointment.AppointmentStartDateTime;
+            appointmentToBeUpdated.AppointmentEndDateTime=appointment.AppointmentEndDateTime;
             appointmentToBeUpdated.AppointmentDescription=appointment.AppointmentDescription;
             return Task.FromResult(true);
         }

@@ -31,14 +31,14 @@ namespace DisprzTraining.Tests.IntegrationTests
               Id=new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"),
               AppointmentTitle="test",
               AppointmentDate="2022-12-12",
-              AppointmentStartTime=new DateTime(2021, 10, 10, 10, 10, 10),
-              AppointmentEndTime=new DateTime(2021, 10, 10, 20, 10, 10),
+              AppointmentStartDateTime=DateTime.Now,
+              AppointmentEndDateTime=DateTime.Now.AddHours(1),
               AppointmentDescription="test"             
             };
             var serializeObject = JsonConvert.SerializeObject(mockData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
-            var response =await client.PutAsync("api/Appointments/9245fe4a-d402-451c-b9ed-9c1a04247482", stringContent);
+            var response =await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247482", stringContent);
             //Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

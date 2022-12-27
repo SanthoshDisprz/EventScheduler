@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DisprzTraining.DataAccess;
 using DisprzTraining.Data;
 using Appointments;
+using DisprzTraining.Models;
 
 namespace DisprzTraining.Business
 {
@@ -17,14 +18,18 @@ namespace DisprzTraining.Business
         }
         public async Task<List<Appointment>> GetAllAppointments()
         {
-            return await _appointmentdal.GetAllAppointments();
+            var appointmentList = await _appointmentdal.GetAllAppointments();
+            var sortedAppointmentList = appointmentList.OrderBy(appointment=>appointment.AppointmentStartDateTime).ToList();
+            return sortedAppointmentList;
         }
-        public async Task<List<Appointment>> GetAppointments(string appointmentDate)
+        public async Task<List<Appointment>> GetAppointmentsByDate(string appointmentDate)
         {
             DateTime dateTime;
             if(DateTime.TryParse(appointmentDate, out dateTime))
             {
-            return await _appointmentdal.GetAppointments(appointmentDate);
+            var appointmentList = await _appointmentdal.GetAppointmentsByDate(appointmentDate);
+            var sortedAppointmentList = appointmentList.OrderBy(appointment=>appointment.AppointmentStartDateTime).ToList();
+            return sortedAppointmentList;
             }
             else{
                 throw new Exception("Invalid Input Type for Appointment Date. Appointment Date should be of Date format");
@@ -36,12 +41,11 @@ namespace DisprzTraining.Business
         }
         public Task<bool> AppointmentConflictCheck(Appointment appointment)
         {
-            if(appointment.AppointmentStartTime==appointment.AppointmentEndTime) throw new Exception("Appointment Start time and End time should not be same");
-            else if(appointment.AppointmentStartTime>appointment.AppointmentEndTime) throw new Exception("Appointment Start time should be greater than End time");
+            
             bool isConflict=false;
-            foreach(var meet in AppointmentStore.AppointmentList.ToList())
+            foreach(var meet in AppointmentStore.AppointmentList)
             {
-                if((meet.AppointmentStartTime<=appointment.AppointmentEndTime) && (appointment.AppointmentStartTime<=meet.AppointmentEndTime)){
+                if((meet.AppointmentStartDateTime<=appointment.AppointmentEndDateTime) && (appointment.AppointmentStartDateTime<=meet.AppointmentEndDateTime)){
                     isConflict = true;
                 }
             }
@@ -50,6 +54,8 @@ namespace DisprzTraining.Business
         }
         public async Task<bool> CreateAppointment(Appointment appointment)
         {
+            if(appointment.AppointmentStartDateTime==appointment.AppointmentEndDateTime) throw new Exception("Appointment Start time and End time should not be same");
+            else if(appointment.AppointmentStartDateTime>appointment.AppointmentEndDateTime) throw new Exception("Appointment Start time should be greater than End time");
             DateTime dateTime;
             if(DateTime.TryParse(appointment.AppointmentDate, out dateTime))
             {
@@ -65,6 +71,11 @@ namespace DisprzTraining.Business
         {
             bool isValidAppointmentId=false;
             var appointment = AppointmentStore.AppointmentList.Find(appointment=>appointment.Id==id);
+             var currentDateAndTime = DateTime.UtcNow;
+            var appointmentStartDateAndTime = appointment?.AppointmentStartDateTime;
+            if(currentDateAndTime>appointmentStartDateAndTime){
+                throw new Exception("Cannot Delete Older Appointments");
+            }
             if(appointment!=null)
             {
             await _appointmentdal.DeleteAppointment(appointment);
@@ -72,13 +83,36 @@ namespace DisprzTraining.Business
             }
             return isValidAppointmentId;
         }
-        public async Task<bool> UpdateAppointment(Guid id, Appointment appointment)
+        public Task<bool> UpdateAppointmentConflictCheck(Guid id, UpdateAppointment appointment)
         {
-            if(id!=appointment.Id || appointment==null)
+           
+            // bool isConflict=false;
+            foreach(var meet in AppointmentStore.AppointmentList)
             {
+                if(id==meet.Id){ continue;}
+                if((meet.AppointmentStartDateTime<=appointment.AppointmentEndDateTime) && (appointment.AppointmentStartDateTime<=meet.AppointmentEndDateTime)){
+                    // isConflict = true;
+                    return Task.FromResult(true);
+                }
+            
+            }
+           return Task.FromResult(false);
+                
+        }
+        public async Task<bool> UpdateAppointment(Guid id, UpdateAppointment appointment)
+        {
+            if(appointment.AppointmentStartDateTime==appointment.AppointmentEndDateTime) throw new Exception("Appointment Start time and End time should not be same");
+            else if(appointment.AppointmentStartDateTime>appointment.AppointmentEndDateTime) throw new Exception("Appointment Start time should be greater than End time");
+            var currentDateAndTime = DateTime.UtcNow;
+            var appointmentStartDateAndTime = appointment.AppointmentStartDateTime;
+            if(currentDateAndTime>appointmentStartDateAndTime){
+                throw new Exception("Cannot Update Older Appointments");
+            }
+
+            var appointmentToBeUpdated = AppointmentStore.AppointmentList.Find(appointment=>appointment.Id==id);
+            if(appointmentToBeUpdated==null){
                 return false;
             }
-            var appointmentToBeUpdated = AppointmentStore.AppointmentList.Find(appointment=>appointment.Id==id);
             await _appointmentdal.UpdateAppointment(appointmentToBeUpdated, appointment);
             return true;
         }

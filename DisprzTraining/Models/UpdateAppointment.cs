@@ -1,13 +1,15 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-namespace Appointments
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace DisprzTraining.Models
 {
-    public class Appointment
+    public class UpdateAppointment
     {
         [Required]
-        public Guid Id { get; set; }
-        [Required]
-        public string? AppointmentTitle { get; set; }
+         public string? AppointmentTitle { get; set; }
         [Required]
         public string? AppointmentDate { get; set; }
         [Required]
