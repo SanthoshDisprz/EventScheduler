@@ -31,8 +31,7 @@ namespace DisprzTraining.Business
                updatedAppointment.CreatedBy = appointment.CreatedBy;
                updatedAppointment.GuestsList = appointment.GuestsList;
                updatedAppointment.Location = appointment.Location;
-               updatedAppointment.TimeZoneOffset = appointment.TimeZoneOffset;
-               
+               updatedAppointment.TimeZoneOffset = appointment.TimeZoneOffset;   
                appointmentInLocalTimeStamp.Add(updatedAppointment);
                 
             }
@@ -73,7 +72,7 @@ namespace DisprzTraining.Business
                 var appointmentsInLocalTime = convertToLocalTime(appointmentsForCurrentWeek);
                 return appointmentsInLocalTime;
             }
-            // else if(date!=null && duration!=null) throw new Exception("Enter Either appointment date or duration. Both should not be entered");
+            else if(duration?.ToLower()!="week" || duration?.ToLower()!="month" || duration?.ToLower()!="month") throw new Exception("Enter valid Duration");
             else throw new Exception("Either Appointment Date or Duration is mandatory");
 
         }
