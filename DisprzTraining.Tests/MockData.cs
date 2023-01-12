@@ -11,11 +11,10 @@ namespace DisprzTraining.Tests
           new Appointment
             {
               Id=new Guid(),
-              AppointmentDate="2022-12-12",
-              AppointmentDescription="test",
-              AppointmentEndDateTime=new DateTime(2022, 10, 10, 10, 10, 10),
-              AppointmentStartDateTime=DateTime.Today,
-              AppointmentTitle="test"
+              Description="test",
+              EndTime=new DateTime(2022, 10, 10, 10, 10, 10),
+              StartTime=DateTime.Today,
+              Title="test"
             }
         };
         }

@@ -1,11 +1,13 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-namespace Appointments
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace DisprzTraining.Models
 {
-    public class Appointment
+    public class AddAppointment
     {
-        [Required]
-        public Guid Id { get; set; }
         [Required]
         public string? Title { get; set; }
         [Required]

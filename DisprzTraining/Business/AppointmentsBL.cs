@@ -9,111 +9,147 @@ using DisprzTraining.Models;
 
 namespace DisprzTraining.Business
 {
-    public class AppointmentsBL: IAppointmentsBL
+    public class AppointmentsBL : IAppointmentsBL
     {
-        private readonly IAppointmentDAL _appointmentdal;
-        public AppointmentsBL(IAppointmentDAL appointmentDAL)
+        private readonly IAppointmentsDAL _appointmentsDAL;
+        public AppointmentsBL(IAppointmentsDAL appointmentsDAL)
         {
-            _appointmentdal = appointmentDAL;
+            _appointmentsDAL = appointmentsDAL;
         }
-        public async Task<List<Appointment>> GetAllAppointments()
+        //In GET call, convert ISO time to client's local time
+        private List<Appointment> convertToLocalTime(List<Appointment> appointmentList)
         {
-            var appointmentList = await _appointmentdal.GetAllAppointments();
-            var sortedAppointmentList = appointmentList.OrderBy(appointment=>appointment.AppointmentStartDateTime).ToList();
-            return sortedAppointmentList;
-        }
-        public async Task<List<Appointment>> GetAppointmentsByDate(string appointmentDate)
-        {
-            DateTime dateTime;
-            if(DateTime.TryParse(appointmentDate, out dateTime))
+            List<Appointment> appointmentInLocalTimeStamp = new List<Appointment>();
+            foreach(var appointment in appointmentList)
             {
-            var appointmentList = await _appointmentdal.GetAppointmentsByDate(appointmentDate);
-            var sortedAppointmentList = appointmentList.OrderBy(appointment=>appointment.AppointmentStartDateTime).ToList();
-            return sortedAppointmentList;
+               var updatedAppointment = new Appointment();
+               updatedAppointment.Id = appointment.Id;
+               updatedAppointment.Title = appointment.Title;
+               updatedAppointment.StartTime = appointment?.StartTime.Value.AddMinutes(-appointment.TimeZoneOffset);
+               updatedAppointment.EndTime = appointment?.EndTime.Value.AddMinutes(-appointment.TimeZoneOffset);
+               updatedAppointment.Description = appointment.Description;
+               updatedAppointment.CreatedBy = appointment.CreatedBy;
+               updatedAppointment.GuestsList = appointment.GuestsList;
+               updatedAppointment.Location = appointment.Location;
+               updatedAppointment.TimeZoneOffset = appointment.TimeZoneOffset;
+               
+               appointmentInLocalTimeStamp.Add(updatedAppointment);
+                
             }
-            else{
-                throw new Exception("Invalid Input Type for Appointment Date. Appointment Date should be of Date format");
-            }
+            return appointmentInLocalTimeStamp;
         }
-        public async Task<List<Appointment>> GetAppointmentById(Guid id)
+
+        public List<Appointment> GetAppointments(DateTime? date, int?timeZoneOffset, string ?duration)
         {
-            return await _appointmentdal.GetAppointmentById(id);
-        }
-        public Task<bool> AppointmentConflictCheck(Appointment appointment)
-        {
-            
-            bool isConflict=false;
-            foreach(var meet in AppointmentStore.AppointmentList)
+            var allAppointments =  _appointmentsDAL.GetAllAppointments();
+            DateTime now = DateTime.UtcNow;
+            if ((date != null && duration == null)||(date!=null && duration!=null))
             {
-                if((meet.AppointmentStartDateTime<=appointment.AppointmentEndDateTime) && (appointment.AppointmentStartDateTime<=meet.AppointmentEndDateTime)){
+            var appointmentList =  _appointmentsDAL.GetAppointmentsByDate(date.Value, timeZoneOffset.Value);
+           var appointmentsInLocalTime = convertToLocalTime(appointmentList);
+            return appointmentsInLocalTime;
+            }
+            else if (duration?.ToLower() == "month" && date==null)
+            {
+                var startDate = new DateTime(now.Year, now.Month, 1);
+                var endDate = startDate.AddMonths(1).AddSeconds(-1);
+                var appointmentsForCurrentMonth = allAppointments.Where(appointment => appointment.StartTime >= startDate && appointment.StartTime <= endDate).ToList();
+                var appointmentsInLocalTime = convertToLocalTime(appointmentsForCurrentMonth);
+                return appointmentsInLocalTime;
+            }
+            else if (duration?.ToLower() == "year" && date==null)
+            {
+                var startDate = new DateTime(now.Year, 1, 1);
+                var endDate = startDate.AddYears(1).AddSeconds(-1);
+                var appointmentsForCurrentYear = allAppointments.Where(appointment => appointment.StartTime >= startDate && appointment.StartTime <= endDate).ToList();
+                var appointmentsInLocalTime = convertToLocalTime(appointmentsForCurrentYear);
+                return appointmentsInLocalTime;
+            }
+            else if (duration?.ToLower() == "week" && date==null)
+            {
+                var startDate = now.AddDays(-(int)now.DayOfWeek-1);
+                var endDate = startDate.AddDays(7).AddSeconds(-1);
+                var appointmentsForCurrentWeek = allAppointments.Where(appointment => appointment.StartTime >= startDate && appointment.StartTime <= endDate).ToList();
+                var appointmentsInLocalTime = convertToLocalTime(appointmentsForCurrentWeek);
+                return appointmentsInLocalTime;
+            }
+            // else if(date!=null && duration!=null) throw new Exception("Enter Either appointment date or duration. Both should not be entered");
+            else throw new Exception("Either Appointment Date or Duration is mandatory");
+
+        }
+
+        public bool AppointmentConflictCheck(AddAppointment appointment)
+        {
+
+            bool isConflict = false;
+            foreach (var meet in AppointmentsStore.AppointmentList)
+            {
+                if ((meet.StartTime < appointment.EndTime) && (appointment.StartTime < meet.EndTime))
+                {
                     isConflict = true;
                 }
             }
-           
-                return Task.FromResult(isConflict);
+
+            return isConflict;
         }
-        public async Task<bool> CreateAppointment(Appointment appointment)
+        public bool CreateAppointment(AddAppointment appointment)
         {
-            if(appointment.AppointmentStartDateTime==appointment.AppointmentEndDateTime) throw new Exception("Appointment Start time and End time should not be same");
-            else if(appointment.AppointmentStartDateTime>appointment.AppointmentEndDateTime) throw new Exception("Appointment Start time should be greater than End time");
-            DateTime dateTime;
-            if(DateTime.TryParse(appointment.AppointmentDate, out dateTime))
+            var currentTime = DateTime.UtcNow;
+            if (appointment.StartTime == appointment.EndTime) throw new Exception("Appointment Start time and End time should not be same");
+            else if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
+            else if(appointment.StartTime < currentTime) throw new Exception("Cannot create appointment for past time");
+            return _appointmentsDAL.CreateAppointment(appointment);
+        }
+
+        public bool DeleteAppointment(Guid id)
+        {
+            bool isValidAppointmentId = false;
+            var appointment = AppointmentsStore.AppointmentList.Find(appointment => appointment.Id == id);
+            var currentDateAndTime = DateTime.UtcNow;
+            var appointmentStartDateAndTime = appointment?.StartTime;
+            if (currentDateAndTime > appointmentStartDateAndTime)
             {
-            return await _appointmentdal.CreateAppointment(appointment);
-            }
-            else{
-                throw new Exception("Invalid Input Type for Appointment Date. Appointment Date should be of Date format");
-            }
-           
-        }
-        
-        public async Task<bool> DeleteAppointment(Guid id)
-        {
-            bool isValidAppointmentId=false;
-            var appointment = AppointmentStore.AppointmentList.Find(appointment=>appointment.Id==id);
-             var currentDateAndTime = DateTime.UtcNow;
-            var appointmentStartDateAndTime = appointment?.AppointmentStartDateTime;
-            if(currentDateAndTime>appointmentStartDateAndTime){
                 throw new Exception("Cannot Delete Older Appointments");
             }
-            if(appointment!=null)
+            if (appointment != null)
             {
-            await _appointmentdal.DeleteAppointment(appointment);
-            isValidAppointmentId=true;
+                _appointmentsDAL.DeleteAppointment(appointment);
+                isValidAppointmentId = true;
             }
             return isValidAppointmentId;
         }
-        public Task<bool> UpdateAppointmentConflictCheck(Guid id, UpdateAppointment appointment)
+        public bool UpdateAppointmentConflictCheck(Guid id, AddAppointment appointment)
         {
-           
-            // bool isConflict=false;
-            foreach(var meet in AppointmentStore.AppointmentList)
+
+            foreach (var meet in AppointmentsStore.AppointmentList)
             {
-                if(id==meet.Id){ continue;}
-                if((meet.AppointmentStartDateTime<=appointment.AppointmentEndDateTime) && (appointment.AppointmentStartDateTime<=meet.AppointmentEndDateTime)){
-                    // isConflict = true;
-                    return Task.FromResult(true);
+                if (id == meet.Id) { continue; }
+                if ((meet.StartTime < appointment.EndTime) && (appointment.StartTime < meet.EndTime))
+                {
+                    return true;
                 }
-            
+
             }
-           return Task.FromResult(false);
-                
+            return false;
+
         }
-        public async Task<bool> UpdateAppointment(Guid id, UpdateAppointment appointment)
+        public bool UpdateAppointment(Guid id, AddAppointment appointment)
         {
-            if(appointment.AppointmentStartDateTime==appointment.AppointmentEndDateTime) throw new Exception("Appointment Start time and End time should not be same");
-            else if(appointment.AppointmentStartDateTime>appointment.AppointmentEndDateTime) throw new Exception("Appointment Start time should be greater than End time");
+            if (appointment.StartTime == appointment.EndTime) throw new Exception("Appointment Start time and End time should not be same");
+            else if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
             var currentDateAndTime = DateTime.UtcNow;
-            var appointmentStartDateAndTime = appointment.AppointmentStartDateTime;
-            if(currentDateAndTime>appointmentStartDateAndTime){
+            var appointmentStartDateAndTime = appointment.StartTime;
+            if (currentDateAndTime > appointmentStartDateAndTime)
+            {
                 throw new Exception("Cannot Update Older Appointments");
             }
 
-            var appointmentToBeUpdated = AppointmentStore.AppointmentList.Find(appointment=>appointment.Id==id);
-            if(appointmentToBeUpdated==null){
+            var appointmentToBeUpdated = AppointmentsStore.AppointmentList.Find(appointment => appointment.Id == id);
+            if (appointmentToBeUpdated == null)
+            {
                 return false;
             }
-            await _appointmentdal.UpdateAppointment(appointmentToBeUpdated, appointment);
+            _appointmentsDAL.UpdateAppointment(appointmentToBeUpdated, appointment);
             return true;
         }
     }
@@ -126,60 +162,3 @@ namespace DisprzTraining.Business
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// if(appointment.AppointmentStartTime==appointment.AppointmentEndTime) throw new Exception("Start time and end time should not be same");
-//             else if(appointment.AppointmentStartTime>appointment.AppointmentEndTime) throw new Exception("Appointment Start time should be greater than End time");
-
-//             bool isConflict=false;
-//             foreach(var x in AppointmentStore.AppointmentList.ToList())
-//             {
-//                 isConflict = (x.AppointmentStartTime<=appointment.AppointmentEndTime) && (appointment.AppointmentStartTime<=x.AppointmentEndTime); 
-//             }
-//             if(isConflict == false)
-//             {
-//              return await _appointmentdal.CreateAppointment(appointment);
-//             }
-//             else
-//                 return false;
-
-
-
-
-
-
-
-
-//  bool isConflict=false;
-//             foreach(var x in AppointmentStore.AppointmentList)
-//             {
-//                 if((x.AppointmentStartTime<=appointment.AppointmentEndTime) && (appointment.AppointmentStartTime<=x.AppointmentEndTime)){ 
-//                 return isConflict=true;
-//                 }
-//                 else{
-//                     await _appointmentdal.CreateAppointment(appointment);
-//                     return isConflict = false;
-//                 }
-//             }
-//             if(isConflict == false)
-//             {
-              
-//               return true;
-//             }
-//                 return isConflict;

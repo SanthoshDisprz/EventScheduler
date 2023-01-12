@@ -22,53 +22,42 @@ namespace DisprzTraining.Controllers
         }
 
 
-        [HttpGet("",Name = "Get All Appointments")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Appointment>))]
-        public async Task<IActionResult> GetAllAppointments()
-        {
-            return Ok(await _appointmentsBL.GetAllAppointments());
-        }
-
-        [HttpGet("date/{appointmentDate}", Name ="Get Appointments by Date")]
+        [HttpGet(Name = "Get Appointments")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Appointment>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetAppointmentsByDate(string appointmentDate)
+        public IActionResult GetAppointments([FromQuery] DateTime? date,[FromQuery] int? timeZoneOffset, [FromQuery] string? duration)
         {
-            try{
-            var appointments = await _appointmentsBL.GetAppointmentsByDate(appointmentDate);
-            return Ok(appointments);   
+            try
+            {
+                var appointments = _appointmentsBL.GetAppointments(date, timeZoneOffset, duration);
+                return Ok(appointments);
             }
-            catch(Exception ex){
-                return BadRequest(new ErrorResponse(){StatusCode=400, ErrorMessage=ex.Message});
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
             }
         }
-        [HttpGet("{id}", Name ="Get Appointment by Id")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Appointment>))]
-        public async Task<IActionResult> GetAppointmentById(Guid id)
-        {
-            var appointment = await _appointmentsBL.GetAppointmentById(id);
-            return Ok(appointment);   
-        }
-
 
 
         [HttpPost(Name = "Create an Appointment")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> CreateAppointment([FromBody]Appointment appointment)
+        public IActionResult CreateAppointment([FromBody] AddAppointment appointment)
         {
             try
             {
-            var result = await _appointmentsBL.AppointmentConflictCheck(appointment);
-            if(!result){
-                await _appointmentsBL.CreateAppointment(appointment);
-            return Created("~api/Appointments", true);
+                var result =  _appointmentsBL.AppointmentConflictCheck(appointment);
+                if (!result)
+                {
+                     _appointmentsBL.CreateAppointment(appointment);
+                    return Created("~api/Appointments", true);
+                }
+                return Conflict(new ErrorResponse() { StatusCode = 409, ErrorMessage = "Appointment Conflict Occured." });
             }
-            return Conflict(new ErrorResponse(){StatusCode=409, ErrorMessage="Appointment Conflict Occured."});
-            }
-             catch(Exception ex){
-                return BadRequest(new ErrorResponse(){StatusCode=400, ErrorMessage=ex.Message});
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
             }
         }
 
@@ -76,19 +65,22 @@ namespace DisprzTraining.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> DeleteAppointment(Guid id)
+        public IActionResult DeleteAppointment(Guid id)
         {
-            try{
-            var result= await _appointmentsBL.DeleteAppointment(id);
-            if(result){
-                return NoContent();
+            try
+            {
+                var result = _appointmentsBL.DeleteAppointment(id);
+                if (result)
+                {
+                    return NoContent();
+                }
+                return NotFound(new ErrorResponse() { StatusCode = 404, ErrorMessage = "The given Id is not found" });
             }
-            return NotFound(new ErrorResponse(){StatusCode=404, ErrorMessage="The given Id is not found"});
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
             }
-             catch(Exception ex){
-                return BadRequest(new ErrorResponse(){StatusCode=400, ErrorMessage=ex.Message});
-            }
-           
+
         }
 
         [HttpPut("{id}", Name = "Update Appointment")]
@@ -96,23 +88,26 @@ namespace DisprzTraining.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> UpdateAppointment(Guid id, [FromBody]UpdateAppointment appointment)
+        public IActionResult UpdateAppointment(Guid id, [FromBody] AddAppointment appointment)
         {
             try
             {
-            var conflict = await _appointmentsBL.UpdateAppointmentConflictCheck(id, appointment);
-            var result = await _appointmentsBL.UpdateAppointment(id, appointment);
-            if(result && !conflict){
-                return Ok();
+                var conflict = _appointmentsBL.UpdateAppointmentConflictCheck(id, appointment);
+                var result = _appointmentsBL.UpdateAppointment(id, appointment);
+                if (result && !conflict)
+                {
+                    return Ok();
+                }
+                else if (conflict)
+                {
+                    return Conflict(new ErrorResponse() { StatusCode = 409, ErrorMessage = "Appointment Conflict Occured." });
+                }
+
+                return NotFound(new ErrorResponse() { StatusCode = 404, ErrorMessage = "The given Id is not found" });
             }
-            else if(conflict){
-                return Conflict(new ErrorResponse(){StatusCode=409, ErrorMessage="Appointment Conflict Occured."});
-            }
-            
-            return NotFound(new ErrorResponse(){StatusCode=404, ErrorMessage="The given Id is not found"});
-            }
-            catch(Exception ex){
-                return BadRequest(new ErrorResponse(){StatusCode=400, ErrorMessage=ex.Message});
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
             }
         }
 

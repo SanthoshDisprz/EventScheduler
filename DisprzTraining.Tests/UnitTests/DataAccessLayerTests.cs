@@ -17,62 +17,56 @@ namespace DisprzTraining.Tests.UnitTests
 {
     public class DataAccessLayerTests
     {
-         //Tests for Data Access Layer
-        AppointmentDAL systemUnderTest = new AppointmentDAL();
+        int timeZoneOffset = -330;
+        //Tests for Data Access Layer
+        AppointmentsDAL systemUnderTest = new AppointmentsDAL();
 
         [Fact]
-        public async Task GetAllAppointments_WhenCalled_ReturnsList()
+        public void GetAllAppointments_WhenCalled_ReturnsList()
         {
             //Act
-            var result = await systemUnderTest.GetAllAppointments();
+            var result = systemUnderTest.GetAllAppointments();
             //Assert
             Assert.IsType<List<Appointment>>(result);
         }
         [Fact]
-        public async Task GetAppointmentsByDate_WhenCalled_ReturnsList()
+        public void GetAppointmentsByDate_WhenCalled_ReturnsList()
         {
             //Act
-            var result = await systemUnderTest.GetAppointmentsByDate("2022-03-03");
-            //Assert
-            Assert.IsType<List<Appointment>>(result);
-        }
-        [Fact]
-        public async Task GetAppointmentById_WhenCalled_ReturnsList()
-        {
-            //Act
-            var result = await systemUnderTest.GetAppointmentById(new Guid());
+            var result = systemUnderTest.GetAppointmentsByDate(new DateTime(2022, 03, 03), timeZoneOffset);
             //Assert
             Assert.IsType<List<Appointment>>(result);
         }
 
+
         [Fact]
-        public async Task CreateAppointmentDAL_WhenCalled_ReturnsTrue()
+        public void CreateAppointmentDAL_WhenCalled_ReturnsTrue()
         {
             //Arrange
-            var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartDateTime = new DateTime().ToLocalTime(), AppointmentEndDateTime = DateTime.Now.AddHours(1) };
+            var testItem = new AddAppointment() { Description = "kkk", Title = "sss", StartTime = new DateTime().ToLocalTime(), EndTime = DateTime.Now.AddHours(1) };
             //Act
-            var result = await systemUnderTest.CreateAppointment(testItem);
+            var result = systemUnderTest.CreateAppointment(testItem);
             //Assert
             Assert.True(result);
         }
         [Fact]
-        public async Task DeleteAppointmentDAL_WhenCalled_ReturnsTrue()
+        public void DeleteAppointmentDAL_WhenCalled_ReturnsTrue()
         {
             //Arrange
-            var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartDateTime = new DateTime().ToLocalTime(), AppointmentEndDateTime = DateTime.Now.AddHours(1) };
+            var testItem = new Appointment() { Id = new Guid(), Description = "kkk", Title = "sss", StartTime = new DateTime().ToLocalTime(), EndTime = DateTime.Now.AddHours(1) };
             //Act
-            var result = await systemUnderTest.DeleteAppointment(testItem);
+            var result = systemUnderTest.DeleteAppointment(testItem);
             //Assert
             Assert.True(result);
         }
         [Fact]
-        public async Task UpdateAppointmentDAL_WhenCalled_ReturnsTrue()
+        public void UpdateAppointmentDAL_WhenCalled_ReturnsTrue()
         {
             //Arrange
-            var testItem = new Appointment() {Id=new Guid(), AppointmentDate = "2022-03-09", AppointmentDescription = "kkk", AppointmentTitle = "sss", AppointmentStartDateTime = new DateTime().ToLocalTime(), AppointmentEndDateTime = DateTime.Now.AddHours(1) };
-            var UpdatedTestItem = new UpdateAppointment() { AppointmentDate = "2022-03-09", AppointmentDescription = "sss", AppointmentTitle = "sss", AppointmentStartDateTime = new DateTime().ToLocalTime(), AppointmentEndDateTime = DateTime.Now.AddHours(1) };
+            var testItem = new Appointment() { Id = new Guid(), Description = "kkk", Title = "sss", StartTime = new DateTime().ToLocalTime(), EndTime = DateTime.Now.AddHours(1) };
+            var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = "sss", StartTime = new DateTime().ToLocalTime(), EndTime = DateTime.Now.AddHours(1) };
             //Act
-            var result = await systemUnderTest.UpdateAppointment(testItem, UpdatedTestItem);
+            var result = systemUnderTest.UpdateAppointment(testItem, UpdatedTestItem);
             //Assert
             Assert.True(result);
         }

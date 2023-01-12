@@ -29,11 +29,10 @@ namespace DisprzTraining.Tests.IntegrationTests
             var mockData = new Appointment
             {
               Id=new Guid(),
-              AppointmentTitle="test",
-              AppointmentDate="2022-12-12",
-              AppointmentStartDateTime=new DateTime(2022, 10, 10, 12, 10, 10),
-              AppointmentEndDateTime=new DateTime(2022, 10, 10, 20, 10, 10),
-              AppointmentDescription="test"             
+              Title="test",
+              StartTime=new DateTime(2022, 10, 10, 12, 10, 10),
+              EndTime=new DateTime(2022, 10, 10, 20, 10, 10),
+              Description="test"             
             };
             var serializeObject = JsonConvert.SerializeObject(mockData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
