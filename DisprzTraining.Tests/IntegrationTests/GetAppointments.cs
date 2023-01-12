@@ -26,7 +26,7 @@ namespace DisprzTraining.Tests.IntegrationTests
             //Arrange
             var client = _factory.CreateClient();
             //Act
-            var response =await client.GetAsync("api/appointments?appointmentDate=2023-01-04");
+            var response =await client.GetAsync("api/appointments?date=2023-01-12T10%3A19%3A09.108Z&timeZoneOffset=-330");
             //Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

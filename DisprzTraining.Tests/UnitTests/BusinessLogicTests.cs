@@ -57,6 +57,17 @@ namespace DisprzTraining.Tests.UnitTests
             var ex = Assert.Throws<Exception>(() => systemUnderTest.GetAppointments(null, null, null));
             Assert.Equal("Either Appointment Date or Duration is mandatory", ex.Message);
         }
+        [Fact]
+        public void GetAppointments_WhenInvalidDurationPassed_ThrowsException()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsDAL>();
+            Mock.Setup(service => service.GetAllAppointments()).Returns(new List<Appointment>());
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
+            //Act and Assert
+            var ex = Assert.Throws<Exception>(() => systemUnderTest.GetAppointments(null, null, "test"));
+            Assert.Equal("Enter valid Duration", ex.Message);
+        }
 
         [Fact]
         public void AppointmentConflictCheck_WhenNoConflict_ReturnsFalse()
