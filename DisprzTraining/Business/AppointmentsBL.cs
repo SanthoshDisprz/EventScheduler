@@ -67,7 +67,7 @@ namespace DisprzTraining.Business
             }
             else if (duration?.ToLower() == "week" && date==null)
             {
-                var startDate = now.AddDays(-(int)now.DayOfWeek-1);
+                var startDate = now.AddDays(-(int)now.DayOfWeek);
                 var endDate = startDate.AddDays(7).AddSeconds(-1);
                 var appointmentsForCurrentWeek = allAppointments.Where(appointment => appointment.StartTime >= startDate && appointment.StartTime <= endDate).ToList();
                 var appointmentsInLocalTime = convertToLocalTime(appointmentsForCurrentWeek);
