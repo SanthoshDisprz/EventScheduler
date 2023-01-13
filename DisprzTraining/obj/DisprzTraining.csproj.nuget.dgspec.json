@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj": {}
+    "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj": {}
   },
   "projects": {
-    "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj": {
+    "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj",
+        "projectUniqueName": "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj",
         "projectName": "DisprzTraining",
-        "projectPath": "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj",
+        "projectPath": "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\DisprzTraining.csproj",
         "packagesPath": "C:\\Users\\santhosh.t_disprz\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\obj\\",
+        "outputPath": "C:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\santhosh.t_disprz\\AppData\\Roaming\\NuGet\\NuGet.Config"
