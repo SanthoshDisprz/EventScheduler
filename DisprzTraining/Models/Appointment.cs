@@ -12,8 +12,7 @@ namespace Appointments
         public DateTime? StartTime { get; set; }
         [Required]
         public DateTime? EndTime { get; set; }
-        [Required]
-        public int TimeZoneOffset { get; set; }
+        // public int TimeZoneOffset { get; set; }
         public string? Description { get; set; }
         public string? CreatedBy { get; set; }
         public List<string>? GuestsList {get; set; }

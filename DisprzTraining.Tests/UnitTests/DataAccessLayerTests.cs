@@ -30,12 +30,20 @@ namespace DisprzTraining.Tests.UnitTests
             Assert.IsType<List<Appointment>>(result);
         }
         [Fact]
-        public void GetAppointmentsByDate_WhenCalled_ReturnsList()
+        public void GetAppointments_WhenCalled_ReturnsList()
         {
             //Act
-            var result = systemUnderTest.GetAppointmentsByDate(new DateTime(2022, 03, 03), timeZoneOffset);
+            var result = systemUnderTest.GetAppointments(new DateTime(2022, 03, 03, 0, 0, 0), new DateTime(2022, 03, 03, 12, 0, 0));
             //Assert
             Assert.IsType<List<Appointment>>(result);
+        }
+        [Fact]
+        public void GetAppointmentById_WhenCalled_ReturnsAppointment()
+        {
+            //Act
+            var result = systemUnderTest.GetAppointmentById(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"));
+            //Assert
+            Assert.IsType<Appointment>(result);
         }
 
 

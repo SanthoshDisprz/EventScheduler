@@ -10,10 +10,11 @@ namespace DisprzTraining.DataAccess
     public interface IAppointmentsDAL
     {
         List<Appointment> GetAllAppointments();
-        List<Appointment> GetAppointmentsByDate(DateTime appointmentDate, int timeZoneOffset);
+        List<Appointment> GetAppointments(DateTime? startTime, DateTime? endTime);
+        Appointment GetAppointmentById(Guid id);
         bool CreateAppointment(AddAppointment appointment);
         bool DeleteAppointment(Appointment appointment);
         bool UpdateAppointment(Appointment appointmenToBeUpdated, AddAppointment appointment);
-        
+
     }
 }

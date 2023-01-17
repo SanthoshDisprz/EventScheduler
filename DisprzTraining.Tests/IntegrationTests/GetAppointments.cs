@@ -21,30 +21,18 @@ namespace DisprzTraining.Tests.IntegrationTests
         _factory = factory;
     }
     [Fact]
-        public async Task GetAppointmentsWhenDatePassed_ReturnSuccess_AndCorrectContentType()
+        public async Task GetAppointments_ReturnSuccess_AndCorrectContentType()
         {
             //Arrange
             var client = _factory.CreateClient();
             //Act
-            var response =await client.GetAsync("api/appointments?date=2023-01-12T10%3A19%3A09.108Z&timeZoneOffset=-330");
+            var response =await client.GetAsync("api/appointments?from=2023-01-17T11%3A08%3A47.017Z&to=2023-01-17T12%3A08%3A47.017Z&timeZoneOffset=-330");
             //Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("application/json; charset=utf-8", 
             response?.Content?.Headers?.ContentType?.ToString());
         }
-        [Fact]
-        public async Task GetAppointmentsWhenDurationPassed_ReturnSuccess_AndCorrectContentType()
-        {
-            //Arrange
-            var client = _factory.CreateClient();
-            //Act
-            var response =await client.GetAsync("api/appointments?duration=Week");
-            //Assert
-            response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("application/json; charset=utf-8", 
-            response?.Content?.Headers?.ContentType?.ToString());
-        }
+
     }
 }

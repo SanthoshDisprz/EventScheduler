@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "N+9VCOEA1oTP5QT5xqzB0XrbX69MqvgYbHMRBLRpkbABOzIMD3/Z85rRTIw4sqE05WZtO3f3zYRtoe2LS1A4Kg==",
+  "dgSpecHash": "UBUQEG/t4yuH98cqXvZ8k7XumpU59/+aEfPj6UK9NU7vDuZ+pQNY+Y3fwpB/0dxB+44hBn6gheNiRTiYRkiC+Q==",
   "success": true,
   "projectFilePath": "c:\\Users\\santhosh.t_disprz\\Desktop\\CalendarApp\\DisprzTraining.Tests\\DisprzTraining.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\santhosh.t_disprz\\.nuget\\packages\\castle.core\\5.1.0\\castle.core.5.1.0.nupkg.sha512",
-    "C:\\Users\\santhosh.t_disprz\\.nuget\\packages\\coverlet.collector\\3.1.2\\coverlet.collector.3.1.2.nupkg.sha512",
+    "C:\\Users\\santhosh.t_disprz\\.nuget\\packages\\coverlet.collector\\3.2.0\\coverlet.collector.3.2.0.nupkg.sha512",
     "C:\\Users\\santhosh.t_disprz\\.nuget\\packages\\fluentassertions\\6.8.0\\fluentassertions.6.8.0.nupkg.sha512",
     "C:\\Users\\santhosh.t_disprz\\.nuget\\packages\\humanizer.core\\2.2.0\\humanizer.core.2.2.0.nupkg.sha512",
     "C:\\Users\\santhosh.t_disprz\\.nuget\\packages\\messagepack\\2.1.152\\messagepack.2.1.152.nupkg.sha512",

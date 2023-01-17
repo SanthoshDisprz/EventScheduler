@@ -10,12 +10,12 @@ namespace DisprzTraining.Business
 {
     public interface IAppointmentsBL
     {
-        List<Appointment> GetAppointments(DateTime? date, int? timeZoneOffset, string ?duration);
+        List<Appointment> GetAppointments(DateTime? startTime, DateTime? endTime, int timeZoneOffset);
         bool AppointmentConflictCheck(AddAppointment appointment);
         bool CreateAppointment(AddAppointment appointment);
         bool DeleteAppointment(Guid id);
         bool UpdateAppointmentConflictCheck(Guid id, AddAppointment appointment);
         bool UpdateAppointment(Guid id, AddAppointment appointment);
-        // List<Appointment> convertToLocalTime(List<Appointment> appointmentList);
+        List<Appointment> ConvertToLocalTime(List<Appointment> appointmentList, int timeZoneOffset);
     }
 }

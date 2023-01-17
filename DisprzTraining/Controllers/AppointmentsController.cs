@@ -25,11 +25,11 @@ namespace DisprzTraining.Controllers
         [HttpGet(Name = "Get Appointments")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Appointment>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public IActionResult GetAppointments([FromQuery] DateTime? date,[FromQuery] int? timeZoneOffset, [FromQuery] string? duration)
+        public IActionResult GetAppointments([FromQuery(Name ="from")] DateTime? startTime, [FromQuery(Name ="to")] DateTime? endTime, [FromQuery] int timeZoneOffset)
         {
             try
             {
-                var appointments = _appointmentsBL.GetAppointments(date, timeZoneOffset, duration);
+                var appointments = _appointmentsBL.GetAppointments(startTime, endTime, timeZoneOffset);
                 return Ok(appointments);
             }
             catch (Exception ex)
@@ -47,10 +47,10 @@ namespace DisprzTraining.Controllers
         {
             try
             {
-                var result =  _appointmentsBL.AppointmentConflictCheck(appointment);
+                var result = _appointmentsBL.AppointmentConflictCheck(appointment);
                 if (!result)
                 {
-                     _appointmentsBL.CreateAppointment(appointment);
+                    _appointmentsBL.CreateAppointment(appointment);
                     return Created("~api/Appointments", true);
                 }
                 return Conflict(new ErrorResponse() { StatusCode = 409, ErrorMessage = "Appointment Conflict Occured." });
@@ -94,16 +94,16 @@ namespace DisprzTraining.Controllers
             {
                 var conflict = _appointmentsBL.UpdateAppointmentConflictCheck(id, appointment);
                 var result = _appointmentsBL.UpdateAppointment(id, appointment);
-                if (result && !conflict)
+                if (!result)
                 {
-                    return Ok();
+                    return NotFound(new ErrorResponse() { StatusCode = 404, ErrorMessage = "The given Id is not found" });
                 }
-                else if (conflict)
+                else if (result && conflict)
                 {
                     return Conflict(new ErrorResponse() { StatusCode = 409, ErrorMessage = "Appointment Conflict Occured." });
                 }
+                return Ok();
 
-                return NotFound(new ErrorResponse() { StatusCode = 404, ErrorMessage = "The given Id is not found" });
             }
             catch (Exception ex)
             {

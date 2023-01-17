@@ -16,76 +16,50 @@ namespace DisprzTraining.Business
         {
             _appointmentsDAL = appointmentsDAL;
         }
-        //In GET call, convert ISO time to client's local time
-        private List<Appointment> convertToLocalTime(List<Appointment> appointmentList)
+        //In GET call, convert ISO time to user's local time
+        public List<Appointment> ConvertToLocalTime(List<Appointment> appointmentList, int timeZoneOffset)
         {
             List<Appointment> appointmentInLocalTimeStamp = new List<Appointment>();
-            foreach(var appointment in appointmentList)
+            foreach (var appointment in appointmentList)
             {
-               var updatedAppointment = new Appointment();
-               updatedAppointment.Id = appointment.Id;
-               updatedAppointment.Title = appointment.Title;
-               updatedAppointment.StartTime = appointment?.StartTime.Value.AddMinutes(-appointment.TimeZoneOffset);
-               updatedAppointment.EndTime = appointment?.EndTime.Value.AddMinutes(-appointment.TimeZoneOffset);
-               updatedAppointment.Description = appointment.Description;
-               updatedAppointment.CreatedBy = appointment.CreatedBy;
-               updatedAppointment.GuestsList = appointment.GuestsList;
-               updatedAppointment.Location = appointment.Location;
-               updatedAppointment.TimeZoneOffset = appointment.TimeZoneOffset;   
-               appointmentInLocalTimeStamp.Add(updatedAppointment);
-                
+                var updatedAppointment = new Appointment();
+                updatedAppointment.Id = appointment.Id;
+                updatedAppointment.Title = appointment.Title;
+                updatedAppointment.StartTime = appointment?.StartTime.Value.AddMinutes(-timeZoneOffset);
+                updatedAppointment.EndTime = appointment?.EndTime.Value.AddMinutes(-timeZoneOffset);
+                updatedAppointment.Description = appointment?.Description;
+                updatedAppointment.CreatedBy = appointment?.CreatedBy;
+                updatedAppointment.GuestsList = appointment?.GuestsList;
+                updatedAppointment.Location = appointment?.Location;
+                appointmentInLocalTimeStamp.Add(updatedAppointment);
+
             }
             return appointmentInLocalTimeStamp;
         }
 
-        public List<Appointment> GetAppointments(DateTime? date, int?timeZoneOffset, string ?duration)
+        public List<Appointment> GetAppointments(DateTime? startTime, DateTime? endTime, int timeZoneOffset)
         {
-            var allAppointments =  _appointmentsDAL.GetAllAppointments();
-            DateTime now = DateTime.UtcNow;
-            if ((date != null && duration == null)||(date!=null && duration!=null))
-            {
-            var appointmentList =  _appointmentsDAL.GetAppointmentsByDate(date.Value, timeZoneOffset.Value);
-           var appointmentsInLocalTime = convertToLocalTime(appointmentList);
+            if (startTime == null || endTime == null) throw new Exception("Both Start time and End time are mandatory for getting appointments");
+            else if (startTime > endTime) throw new Exception("Start time should be lesser than End time");
+            else if (startTime == endTime) throw new Exception("Start time and End time should not be equal");
+            var appointmentsList = _appointmentsDAL.GetAppointments(startTime, endTime);
+            var appointmentsInLocalTime = ConvertToLocalTime(appointmentsList, timeZoneOffset);
             return appointmentsInLocalTime;
-            }
-            else if (duration?.ToLower() == "month" && date==null)
-            {
-                var startDate = new DateTime(now.Year, now.Month, 1);
-                var endDate = startDate.AddMonths(1).AddSeconds(-1);
-                var appointmentsForCurrentMonth = allAppointments.Where(appointment => appointment.StartTime >= startDate && appointment.StartTime <= endDate).ToList();
-                var appointmentsInLocalTime = convertToLocalTime(appointmentsForCurrentMonth);
-                return appointmentsInLocalTime;
-            }
-            else if (duration?.ToLower() == "year" && date==null)
-            {
-                var startDate = new DateTime(now.Year, 1, 1);
-                var endDate = startDate.AddYears(1).AddSeconds(-1);
-                var appointmentsForCurrentYear = allAppointments.Where(appointment => appointment.StartTime >= startDate && appointment.StartTime <= endDate).ToList();
-                var appointmentsInLocalTime = convertToLocalTime(appointmentsForCurrentYear);
-                return appointmentsInLocalTime;
-            }
-            else if (duration?.ToLower() == "week" && date==null)
-            {
-                var startDate = now.AddDays(-(int)now.DayOfWeek);
-                var endDate = startDate.AddDays(7).AddSeconds(-1);
-                var appointmentsForCurrentWeek = allAppointments.Where(appointment => appointment.StartTime >= startDate && appointment.StartTime <= endDate).ToList();
-                var appointmentsInLocalTime = convertToLocalTime(appointmentsForCurrentWeek);
-                return appointmentsInLocalTime;
-            }
-            else if(duration?.ToLower()!="week" || duration?.ToLower()!="month" || duration?.ToLower()!="month") throw new Exception("Enter valid Duration");
-            else throw new Exception("Either Appointment Date or Duration is mandatory");
-
         }
 
         public bool AppointmentConflictCheck(AddAppointment appointment)
         {
+            var allAppointments = _appointmentsDAL.GetAllAppointments();
 
             bool isConflict = false;
-            foreach (var meet in AppointmentsStore.AppointmentList)
+            if (allAppointments != null)
             {
-                if ((meet.StartTime < appointment.EndTime) && (appointment.StartTime < meet.EndTime))
+                foreach (var meet in allAppointments)
                 {
-                    isConflict = true;
+                    if ((meet.StartTime < appointment.EndTime) && (appointment.StartTime < meet.EndTime))
+                    {
+                        isConflict = true;
+                    }
                 }
             }
 
@@ -96,7 +70,7 @@ namespace DisprzTraining.Business
             var currentTime = DateTime.UtcNow;
             if (appointment.StartTime == appointment.EndTime) throw new Exception("Appointment Start time and End time should not be same");
             else if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
-            else if(appointment.StartTime < currentTime) throw new Exception("Cannot create appointment for past time");
+            else if (appointment.StartTime < currentTime) throw new Exception("Cannot create appointment for past time");
             return _appointmentsDAL.CreateAppointment(appointment);
         }
 
@@ -119,21 +93,25 @@ namespace DisprzTraining.Business
         }
         public bool UpdateAppointmentConflictCheck(Guid id, AddAppointment appointment)
         {
-
-            foreach (var meet in AppointmentsStore.AppointmentList)
+            var allAppointments = _appointmentsDAL.GetAllAppointments();
+            if (allAppointments != null)
             {
-                if (id == meet.Id) { continue; }
-                if ((meet.StartTime < appointment.EndTime) && (appointment.StartTime < meet.EndTime))
+                foreach (var meet in allAppointments)
                 {
-                    return true;
-                }
+                    if (id == meet.Id) { continue; }
+                    if ((meet.StartTime < appointment.EndTime) && (appointment.StartTime < meet.EndTime))
+                    {
+                        return true;
+                    }
 
+                }
             }
             return false;
 
         }
         public bool UpdateAppointment(Guid id, AddAppointment appointment)
         {
+            var allAppointments = _appointmentsDAL.GetAllAppointments();
             if (appointment.StartTime == appointment.EndTime) throw new Exception("Appointment Start time and End time should not be same");
             else if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
             var currentDateAndTime = DateTime.UtcNow;
@@ -143,7 +121,7 @@ namespace DisprzTraining.Business
                 throw new Exception("Cannot Update Older Appointments");
             }
 
-            var appointmentToBeUpdated = AppointmentsStore.AppointmentList.Find(appointment => appointment.Id == id);
+            var appointmentToBeUpdated = _appointmentsDAL.GetAppointmentById(id);
             if (appointmentToBeUpdated == null)
             {
                 return false;
@@ -151,6 +129,8 @@ namespace DisprzTraining.Business
             _appointmentsDAL.UpdateAppointment(appointmentToBeUpdated, appointment);
             return true;
         }
+
+
     }
 }
 

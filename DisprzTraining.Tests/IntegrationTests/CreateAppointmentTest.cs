@@ -31,8 +31,7 @@ namespace DisprzTraining.Tests.IntegrationTests
               Title="test",
               StartTime=DateTime.UtcNow.AddHours(1),
               EndTime=DateTime.UtcNow.AddHours(2),
-              Description="test" ,
-              TimeZoneOffset=-330,            
+              Description="test" ,           
             };
             var serializeObject = JsonConvert.SerializeObject(mockData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
