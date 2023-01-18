@@ -1,9 +1,5 @@
 .vs
-test.cs
 DisprzTraining/bin/*
 DisprzTraining/obj/*
 DisprzTraining.Tests/bin/*
 DisprzTraining.Tests/obj/*
-
-# **/bin/*
-# **/obj/*

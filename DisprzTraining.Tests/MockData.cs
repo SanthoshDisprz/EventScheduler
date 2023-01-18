@@ -1,4 +1,5 @@
 using Appointments;
+using System;
 
 namespace DisprzTraining.Tests
 {
