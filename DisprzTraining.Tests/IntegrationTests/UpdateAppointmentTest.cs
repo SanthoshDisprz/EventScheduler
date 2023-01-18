@@ -28,16 +28,16 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-              Id=new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"),
+              Id=new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"),
               Title="test",
-              StartTime=DateTime.Now,
-              EndTime=DateTime.Now.AddHours(1),
+              StartTime=new DateTime(2024, 11, 10, 10, 10, 10, 10),
+              EndTime=new DateTime(2024, 11, 10, 11, 10, 10, 10),
               Description="test"             
             };
             var serializeObject = JsonConvert.SerializeObject(mockData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
-            var response =await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247482", stringContent);
+            var response =await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247471", stringContent);
             //Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

@@ -164,7 +164,21 @@ namespace DisprzTraining.Tests.UnitTests
             Assert.Equal("Cannot create appointment for past time", ex.Message);
 
         }
+        [Fact]
+        public void CreateAppointment_WhenNoError_ReturnsTrue()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsDAL>();
+            var testItem = new AddAppointment() { Description = "kkk", Title = "sss", StartTime = DateTime.UtcNow.AddMonths(1), EndTime = DateTime.UtcNow.AddMonths(1).AddHours(1) };
+            Mock.Setup(service => service.CreateAppointment(testItem)).Returns(true);
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
 
+            //Act and Assert
+            var result = systemUnderTest.CreateAppointment(testItem);
+            Assert.True(result);
+
+
+        }
 
 
 
@@ -307,7 +321,22 @@ namespace DisprzTraining.Tests.UnitTests
 
             //Act and Assert
             var ex = Assert.Throws<Exception>(() => systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), UpdatedTestItem));
-            Assert.Equal("Cannot Update Older Appointments", ex.Message);
+            Assert.Equal("Cannot Update Appointment to Past time", ex.Message);
+        }
+        [Fact]
+        public void UpdateAppointment_WhenTriedToUpdatePastAppointment_ThrowsException()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsDAL>();
+            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"), Description = "kkk", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 12, 10, 10) };
+            var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = "sss", StartTime = new DateTime(2023, 10, 10, 10, 10, 10), EndTime = new DateTime(2023, 10, 10, 12, 10, 10) };
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
+            Mock.Setup(service => service.UpdateAppointment(testItem, UpdatedTestItem)).Returns(true);
+            Mock.Setup(service => service.GetAppointmentById(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"))).Returns(testItem);
+
+            //Act and Assert
+            var ex = Assert.Throws<Exception>(() => systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"), UpdatedTestItem));
+            Assert.Equal("Cannot Update Past Appointment", ex.Message);
         }
 
     }

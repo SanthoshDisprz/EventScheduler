@@ -33,9 +33,10 @@ namespace DisprzTraining.Tests.UnitTests
         public void GetAppointments_WhenCalled_ReturnsList()
         {
             //Act
-            var result = systemUnderTest.GetAppointments(new DateTime(2022, 03, 03, 0, 0, 0), new DateTime(2022, 03, 03, 12, 0, 0));
+            var result = systemUnderTest.GetAppointments(new DateTime(2021, 10, 10, 10, 10, 10), new DateTime(2021, 10, 11, 10, 30, 30));
             //Assert
             Assert.IsType<List<Appointment>>(result);
+            Assert.Equal(1, result.Count);
         }
         [Fact]
         public void GetAppointmentById_WhenCalled_ReturnsAppointment()

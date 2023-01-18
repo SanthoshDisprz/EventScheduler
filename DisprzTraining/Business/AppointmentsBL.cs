@@ -111,14 +111,13 @@ namespace DisprzTraining.Business
         }
         public bool UpdateAppointment(Guid id, AddAppointment appointment)
         {
-            var allAppointments = _appointmentsDAL.GetAllAppointments();
             if (appointment.StartTime == appointment.EndTime) throw new Exception("Appointment Start time and End time should not be same");
             else if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
             var currentDateAndTime = DateTime.UtcNow;
             var appointmentStartDateAndTime = appointment.StartTime;
             if (currentDateAndTime > appointmentStartDateAndTime)
             {
-                throw new Exception("Cannot Update Older Appointments");
+                throw new Exception("Cannot Update Appointment to Past time");
             }
 
             var appointmentToBeUpdated = _appointmentsDAL.GetAppointmentById(id);
@@ -126,6 +125,7 @@ namespace DisprzTraining.Business
             {
                 return false;
             }
+            else if(currentDateAndTime>appointmentToBeUpdated.StartTime) throw new Exception("Cannot Update Past Appointment");
             _appointmentsDAL.UpdateAppointment(appointmentToBeUpdated, appointment);
             return true;
         }

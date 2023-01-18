@@ -283,6 +283,22 @@ namespace DisprzTraining.Tests.UnitTests
             badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Cannot Update Older Appointment" });
         }
         [Fact]
+        public void UpdateAppointment_WhenTriedToUpdateAppointmentToPastTime_ReturnsBadRequest()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsBL>();
+            var testItem = new AddAppointment() { Description = "test", Title = "Demo", StartTime = DateTime.Now.AddHours(-1), EndTime = DateTime.Now.AddHours(1) };
+            Mock.Setup(service => service.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"), testItem)).Throws(new Exception("Cannot Update Appointment to Past time"));
+            var systemUnderTest = new AppointmentsController(Mock.Object);
+            //Act
+            var exceptionResult = systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"), testItem);
+            var badRequestResult = (BadRequestObjectResult)exceptionResult;
+
+            //Assert
+            Assert.IsType<BadRequestObjectResult>(exceptionResult);
+            badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Cannot Update Appointment to Past time" });
+        }
+        [Fact]
         public void UpdateAppointment_WhenAppointmentStartTimeAndEndTimeAreSame_ReturnsBadRequest()
         {
             //Arrange

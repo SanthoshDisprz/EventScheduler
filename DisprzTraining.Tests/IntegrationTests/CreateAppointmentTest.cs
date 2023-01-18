@@ -29,8 +29,8 @@ namespace DisprzTraining.Tests.IntegrationTests
             var mockData = new Appointment
             {
               Title="test",
-              StartTime=DateTime.UtcNow.AddHours(1),
-              EndTime=DateTime.UtcNow.AddHours(2),
+              StartTime=new DateTime(2024, 10, 10, 10, 10, 10, 10),
+              EndTime=new DateTime(2024, 10, 10, 11, 10, 10, 10),
               Description="test" ,           
             };
             var serializeObject = JsonConvert.SerializeObject(mockData);
