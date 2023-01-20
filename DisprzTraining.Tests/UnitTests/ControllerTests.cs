@@ -14,9 +14,11 @@ using DisprzTraining.Models;
 
 namespace DisprzTraining.Tests.UnitTests
 {
+    //Controller Test cases
     public class ControllerTests
     {
         int timeZoneOffset = -330;
+        //Get Appointments - Passing test cases
         [Fact]
         public void GetAppointments_WhenFromAndToTimePassed_ReturnsAllAppointments()
         {
@@ -49,7 +51,7 @@ namespace DisprzTraining.Tests.UnitTests
             okResult.Value.Should().BeEquivalentTo(MockData.TestData());
         }
 
-
+        //Get Appointments - Failing test cases
 
         [Fact]
         public void GetAppointments_WhenNothingPassed_ThrowsException()
@@ -59,13 +61,11 @@ namespace DisprzTraining.Tests.UnitTests
             Mock.Setup(service => service.GetAppointments(null, null, 0)).Throws(new Exception("Both Start time and End time are mandatory for getting appointments"));
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
-            var exceptionResult = systemUnderTest.GetAppointments(null, null, 0);
-
-            //Assert
-            var badRequestResult = (BadRequestObjectResult)exceptionResult;
+            var badRequestResult = systemUnderTest.GetAppointments(null, null, 0);
+            var badRequestObjectResult = (BadRequestObjectResult)badRequestResult;
             //Assert
             Assert.IsType<BadRequestObjectResult>(badRequestResult);
-            badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Both Start time and End time are mandatory for getting appointments" });
+            badRequestObjectResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Both Start time and End time are mandatory for getting appointments" });
         }
         [Fact]
         public void GetAppointments_WhenFromAndToTimeAreSame_ThrowsException()
@@ -75,13 +75,11 @@ namespace DisprzTraining.Tests.UnitTests
             Mock.Setup(service => service.GetAppointments(new DateTime(2023, 01, 04), new DateTime(2023, 01, 04), 0)).Throws(new Exception("Start time and End time should not be equal"));
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
-            var exceptionResult = systemUnderTest.GetAppointments(new DateTime(2023, 01, 04), new DateTime(2023, 01, 04), 0);
-
-            //Assert
-            var badRequestResult = (BadRequestObjectResult)exceptionResult;
+            var badRequestResult = systemUnderTest.GetAppointments(new DateTime(2023, 01, 04), new DateTime(2023, 01, 04), 0);
+            var badRequestObjectResult = (BadRequestObjectResult)badRequestResult;
             //Assert
             Assert.IsType<BadRequestObjectResult>(badRequestResult);
-            badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Start time and End time should not be equal" });
+            badRequestObjectResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Start time and End time should not be equal" });
         }
         [Fact]
         public void GetAppointments_WhenFromTimeGreaterThanToTime_ThrowsException()
@@ -91,16 +89,14 @@ namespace DisprzTraining.Tests.UnitTests
             Mock.Setup(service => service.GetAppointments(new DateTime(2023, 01, 06), new DateTime(2023, 01, 04), 0)).Throws(new Exception("Start time should be lesser than End time"));
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
-            var exceptionResult = systemUnderTest.GetAppointments(new DateTime(2023, 01, 06), new DateTime(2023, 01, 04), 0);
-
-            //Assert
-            var badRequestResult = (BadRequestObjectResult)exceptionResult;
+            var badRequestResult = systemUnderTest.GetAppointments(new DateTime(2023, 01, 06), new DateTime(2023, 01, 04), 0);
+            var badRequestObjectResult = (BadRequestObjectResult)badRequestResult;
             //Assert
             Assert.IsType<BadRequestObjectResult>(badRequestResult);
-            badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Start time should be lesser than End time" });
+            badRequestObjectResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Start time should be lesser than End time" });
         }
 
-
+        //Create appointment - Passing Test cases
 
 
         [Fact]
@@ -109,7 +105,7 @@ namespace DisprzTraining.Tests.UnitTests
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
             var testItem = new AddAppointment() { Description = "test", Title = "Demo", StartTime = new DateTime().ToLocalTime(), EndTime = DateTime.Now.AddHours(1) };
-            Mock.Setup(x => x.AppointmentConflictCheck(testItem)).Returns(false);
+            Mock.Setup(x => x.CreateAppointment(testItem)).Returns(true);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var createdResult = systemUnderTest.CreateAppointment(testItem);
@@ -118,19 +114,23 @@ namespace DisprzTraining.Tests.UnitTests
             Assert.IsType<CreatedResult>(createdResult);
         }
 
+        //Create appointment - Failing Test cases
+
         [Fact]
         public void CreateAppointment_WhenAppointmentsConflict_ReturnsConflict()
         {
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
             var testItem = new AddAppointment() { Description = "test", Title = "Demo", StartTime = new DateTime().ToLocalTime(), EndTime = DateTime.Now.AddHours(1) };
-            Mock.Setup(x => x.AppointmentConflictCheck(testItem)).Returns(true);
+            Mock.Setup(x => x.CreateAppointment(testItem)).Returns(false);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var conflictResult = systemUnderTest.CreateAppointment(testItem);
+            var conflictRequestResult = (ConflictObjectResult)conflictResult;
 
             //Assert
             Assert.IsType<ConflictObjectResult>(conflictResult);
+            conflictRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 409, ErrorMessage = "Appointment Conflict Occured." });
         }
         [Fact]
         public void CreateAppointment_WhenAppointmentStartTimeAndEndTimeAreSame_ReturnsBadRequest()
@@ -178,9 +178,7 @@ namespace DisprzTraining.Tests.UnitTests
             badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Cannot create appointment for past time" });
         }
 
-
-
-
+        //Delete appointment - Passing test case
         [Fact]
         public void DeleteAppointment_WhenExistingIdPassed_ReturnsNoContentResult()
         {
@@ -196,6 +194,8 @@ namespace DisprzTraining.Tests.UnitTests
             Assert.IsType<NoContentResult>(noContentResult);
         }
 
+        //Delete appointment - Failing test cases
+
         [Fact]
         public void DeleteAppointment_WhenNotExistingIdPassed_ReturnsNotFound()
         {
@@ -204,9 +204,11 @@ namespace DisprzTraining.Tests.UnitTests
             Mock.Setup(service => service.DeleteAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"))).Returns(false);
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
-            var okResult = systemUnderTest.DeleteAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"));
+            var notFoundResult = systemUnderTest.DeleteAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"));
+            var notFoundObjectResult = (NotFoundObjectResult)notFoundResult;
             //Assert
-            Assert.IsType<NotFoundObjectResult>(okResult);
+            Assert.IsType<NotFoundObjectResult>(notFoundResult);
+            notFoundObjectResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 404, ErrorMessage = "The given Id is not found" });
         }
         [Fact]
         public void DeleteAppointment_WhenTriedToDeleteOlderAppointments_ReturnsBadRequest()
@@ -223,7 +225,7 @@ namespace DisprzTraining.Tests.UnitTests
             Assert.IsType<BadRequestObjectResult>(exceptionResult);
             badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Cannot Delete Older Appointments" });
         }
-
+        //Update appointment - Passing test case
         [Fact]
         public void UpdateAppointment_ExistingIdPassedAndNoConflict_ReturnsOk()
         {
@@ -238,6 +240,8 @@ namespace DisprzTraining.Tests.UnitTests
             //Assert
             Assert.IsType<OkResult>(okResult);
         }
+
+        //Update appointment - Failing test cases
         [Fact]
         public void UpdateAppointment_ExistingIdPassedAndAppointmentConflict_ReturnsConflict()
         {
@@ -249,8 +253,11 @@ namespace DisprzTraining.Tests.UnitTests
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var conflictResult = systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), testItem);
+            var conflictObjectResult = (ConflictObjectResult)conflictResult;
             //Assert
             Assert.IsType<ConflictObjectResult>(conflictResult);
+            conflictObjectResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 409, ErrorMessage = "Appointment Conflict Occured." });
+            
         }
 
         [Fact]
@@ -263,8 +270,10 @@ namespace DisprzTraining.Tests.UnitTests
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var notFoundResult = systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), testItem);
+            var notFoundObjectResult = (NotFoundObjectResult)notFoundResult;
             //Assert
             Assert.IsType<NotFoundObjectResult>(notFoundResult);
+            notFoundObjectResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 404, ErrorMessage = "The given Id is not found" });
         }
         [Fact]
         public void UpdateAppointment_WhenTriedToUpdateOlderAppointment_ReturnsBadRequest()

@@ -25,12 +25,12 @@ namespace DisprzTraining.Business
                 var updatedAppointment = new Appointment();
                 updatedAppointment.Id = appointment.Id;
                 updatedAppointment.Title = appointment.Title;
-                updatedAppointment.StartTime = appointment?.StartTime.Value.AddMinutes(-timeZoneOffset);
-                updatedAppointment.EndTime = appointment?.EndTime.Value.AddMinutes(-timeZoneOffset);
-                updatedAppointment.Description = appointment?.Description;
-                updatedAppointment.CreatedBy = appointment?.CreatedBy;
-                updatedAppointment.GuestsList = appointment?.GuestsList;
-                updatedAppointment.Location = appointment?.Location;
+                updatedAppointment.StartTime = appointment.StartTime.Value.AddMinutes(-timeZoneOffset);
+                updatedAppointment.EndTime = appointment.EndTime.Value.AddMinutes(-timeZoneOffset);
+                updatedAppointment.Description = appointment.Description;
+                updatedAppointment.CreatedBy = appointment.CreatedBy;
+                updatedAppointment.GuestsList = appointment.GuestsList;
+                updatedAppointment.Location = appointment.Location;
                 appointmentInLocalTimeStamp.Add(updatedAppointment);
 
             }
@@ -39,9 +39,11 @@ namespace DisprzTraining.Business
 
         public List<Appointment> GetAppointments(DateTime? startTime, DateTime? endTime, int timeZoneOffset)
         {
-            if (startTime == null || endTime == null) throw new Exception("Both Start time and End time are mandatory for getting appointments");
-            else if (startTime > endTime) throw new Exception("Start time should be lesser than End time");
-            else if (startTime == endTime) throw new Exception("Start time and End time should not be equal");
+            if (startTime > endTime) throw new Exception("Start time should be lesser than End time");
+
+            else if (startTime == null || endTime == null) throw new Exception("Both Start time and End time are mandatory for getting appointments");
+            else if (startTime.Value == endTime.Value) throw new Exception("Start time and End time should not be equal");
+
             var appointmentsList = _appointmentsDAL.GetAppointments(startTime, endTime);
             var appointmentsInLocalTime = ConvertToLocalTime(appointmentsList, timeZoneOffset);
             return appointmentsInLocalTime;
@@ -52,7 +54,7 @@ namespace DisprzTraining.Business
             var allAppointments = _appointmentsDAL.GetAllAppointments();
 
             bool isConflict = false;
-            if (allAppointments != null)
+            if (allAppointments.Any())
             {
                 foreach (var meet in allAppointments)
                 {
@@ -68,16 +70,23 @@ namespace DisprzTraining.Business
         public bool CreateAppointment(AddAppointment appointment)
         {
             var currentTime = DateTime.UtcNow;
-            if (appointment.StartTime == appointment.EndTime) throw new Exception("Appointment Start time and End time should not be same");
-            else if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
+            if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
             else if (appointment.StartTime < currentTime) throw new Exception("Cannot create appointment for past time");
+            else if (appointment.StartTime == null || appointment.EndTime == null) throw new Exception("Both Start time and End time are mandatory for creating appointments");
+            else if (appointment.StartTime.Value == appointment.EndTime.Value) throw new Exception("Appointment Start time and End time should not be same");
+            var isConflict = AppointmentConflictCheck(appointment);
+            if (isConflict)
+            {
+                return false;
+            }
             return _appointmentsDAL.CreateAppointment(appointment);
         }
 
         public bool DeleteAppointment(Guid id)
         {
+            var allAppointments = _appointmentsDAL.GetAllAppointments();
             bool isValidAppointmentId = false;
-            var appointment = AppointmentsStore.AppointmentList.Find(appointment => appointment.Id == id);
+            var appointment = allAppointments.Find(appointment => appointment.Id == id);
             var currentDateAndTime = DateTime.UtcNow;
             var appointmentStartDateAndTime = appointment?.StartTime;
             if (currentDateAndTime > appointmentStartDateAndTime)
@@ -94,7 +103,7 @@ namespace DisprzTraining.Business
         public bool UpdateAppointmentConflictCheck(Guid id, AddAppointment appointment)
         {
             var allAppointments = _appointmentsDAL.GetAllAppointments();
-            if (allAppointments != null)
+            if (allAppointments.Any())
             {
                 foreach (var meet in allAppointments)
                 {
@@ -111,11 +120,13 @@ namespace DisprzTraining.Business
         }
         public bool UpdateAppointment(Guid id, AddAppointment appointment)
         {
-            if (appointment.StartTime == appointment.EndTime) throw new Exception("Appointment Start time and End time should not be same");
-            else if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
+            if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
+            else if (appointment.StartTime == null || appointment.EndTime == null) throw new Exception("Both Start time and End time are mandatory for updating appointments");
+            else if (appointment.StartTime.Value == appointment.EndTime.Value) throw new Exception("Appointment Start time and End time should not be same");
+
             var currentDateAndTime = DateTime.UtcNow;
             var appointmentStartDateAndTime = appointment.StartTime;
-            if (currentDateAndTime > appointmentStartDateAndTime)
+            if (appointmentStartDateAndTime < currentDateAndTime)
             {
                 throw new Exception("Cannot Update Appointment to Past time");
             }
@@ -125,7 +136,7 @@ namespace DisprzTraining.Business
             {
                 return false;
             }
-            else if(currentDateAndTime>appointmentToBeUpdated.StartTime) throw new Exception("Cannot Update Past Appointment");
+            else if (appointmentToBeUpdated.StartTime < currentDateAndTime) throw new Exception("Cannot Update Past Appointment");
             _appointmentsDAL.UpdateAppointment(appointmentToBeUpdated, appointment);
             return true;
         }

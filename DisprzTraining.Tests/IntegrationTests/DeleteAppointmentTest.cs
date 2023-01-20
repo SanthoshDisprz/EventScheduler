@@ -14,22 +14,42 @@ namespace DisprzTraining.Tests.IntegrationTests
 {
     public class DeleteAppointmentIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
     {
-    private readonly WebApplicationFactory<Program> _factory;
+        private readonly WebApplicationFactory<Program> _factory;
 
-    public DeleteAppointmentIntegrationTest(WebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-    }
-       [Fact]
+        public DeleteAppointmentIntegrationTest(WebApplicationFactory<Program> factory)
+        {
+            _factory = factory;
+        }
+        [Fact]
         public async Task DeleteAppointment_ReturnSuccess()
         {
             //Arrange
             var client = _factory.CreateClient();
             //Act
-            var response =await client.DeleteAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247482");
+            var response = await client.DeleteAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247482");
             //Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+        [Fact]
+        public async Task DeleteAppointment_WhenTriedToDeletePastAppointment_ReturnsBadRequest()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            //Act
+            var response = await client.DeleteAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247481");
+            //Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+        [Fact]
+        public async Task DeleteAppointment_WhenNotExistingIdPassed_ReturnsBadRequest()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            //Act
+            var response = await client.DeleteAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247357");
+            //Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }

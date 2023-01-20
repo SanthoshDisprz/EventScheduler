@@ -43,5 +43,131 @@ namespace DisprzTraining.Tests.IntegrationTests
             Assert.Equal("application/json; charset=utf-8", 
             response?.Content?.Headers?.ContentType?.ToString());
         }
+        [Fact]
+        public async Task CreateAppointment_WhenAppointmentConflicts_ReturnsConflictResult()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var mockData = new Appointment
+            {
+              Title="test",
+              StartTime = new DateTime(2025, 09, 26, 05, 06, 07 ), 
+              EndTime = new DateTime(2025, 09, 26, 06, 06, 07),
+              Description="test" ,           
+            };
+            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            //Act
+            var response =await client.PostAsync("api/appointments", stringContent);
+            //Assert
+            Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+            Assert.Equal("application/json; charset=utf-8", 
+            response?.Content?.Headers?.ContentType?.ToString());
+        }
+        [Fact]
+        public async Task CreateAppointment_WhenStartTimeAndEndTimeAreSame_ReturnsBadRequest()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var mockData = new Appointment
+            {
+              Title="test",
+              StartTime=new DateTime(2024, 10, 10, 12, 10, 10),
+              EndTime=new DateTime(2024, 10, 10, 12, 10, 10),
+              Description="test" ,           
+            };
+            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            //Act
+            var response =await client.PostAsync("api/appointments", stringContent);
+            //Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("application/json; charset=utf-8", 
+            response?.Content?.Headers?.ContentType?.ToString());
+        }
+        [Fact]
+        public async Task CreateAppointment_WhenStartTimeGreaterThanEndTime_ReturnsBadRequest()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var mockData = new Appointment
+            {
+              Title="test",
+              StartTime=new DateTime(2024, 10, 10, 14, 10, 10),
+              EndTime=new DateTime(2024, 10, 10, 12, 10, 10),
+              Description="test" ,           
+            };
+            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            //Act
+            var response =await client.PostAsync("api/appointments", stringContent);
+            //Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("application/json; charset=utf-8", 
+            response?.Content?.Headers?.ContentType?.ToString());
+        }
+        [Fact]
+        public async Task CreateAppointment_WhenStartTimePassedAsNull_ReturnsBadRequest()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var mockData = new Appointment
+            {
+              Title="test",
+              StartTime=null,
+              EndTime=new DateTime(2024, 10, 10, 12, 10, 10),
+              Description="test" ,           
+            };
+            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            //Act
+            var response =await client.PostAsync("api/appointments", stringContent);
+            //Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("application/problem+json; charset=utf-8", 
+            response?.Content?.Headers?.ContentType?.ToString());
+        }
+        [Fact]
+        public async Task CreateAppointment_WhenEndTimePassedAsNull_ReturnsBadRequest()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var mockData = new Appointment
+            {
+              Title="test",
+              StartTime=new DateTime(2024, 10, 10, 12, 10, 10),
+              EndTime=null,
+              Description="test" ,           
+            };
+            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            //Act
+            var response =await client.PostAsync("api/appointments", stringContent);
+            //Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("application/problem+json; charset=utf-8", 
+            response?.Content?.Headers?.ContentType?.ToString());
+        }
+        [Fact]
+        public async Task CreateAppointment_WhenBothStartTimeAndEndTimePassedAsNull_ReturnsBadRequest()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var mockData = new Appointment
+            {
+              Title="test",
+              StartTime=null,
+              EndTime=null,
+              Description="test" ,           
+            };
+            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            //Act
+            var response =await client.PostAsync("api/appointments", stringContent);
+            //Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("application/problem+json; charset=utf-8", 
+            response?.Content?.Headers?.ContentType?.ToString());
+        }
     }
 }

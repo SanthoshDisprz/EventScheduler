@@ -39,6 +39,33 @@ namespace DisprzTraining.Tests.UnitTests
             Assert.Equal(1, result.Count);
         }
         [Fact]
+        public void GetAppointments_WhenStartTimePassedAsNull_ReturnsList()
+        {
+            //Act
+            var result = systemUnderTest.GetAppointments(null, new DateTime(2021, 10, 11, 10, 30, 30));
+            //Assert
+            Assert.IsType<List<Appointment>>(result);
+            Assert.Equal(0, result.Count);
+        }
+        [Fact]
+        public void GetAppointments_WhenEndTimePassedAsNull_ReturnsList()
+        {
+            //Act
+            var result = systemUnderTest.GetAppointments(new DateTime(2021, 10, 11, 10, 10, 10), null);
+            //Assert
+            Assert.IsType<List<Appointment>>(result);
+            Assert.Equal(0, result.Count);
+        }
+              [Fact]
+        public void GetAppointments_WhenBothPassedAsNull_ReturnsList()
+        {
+            //Act
+            var result = systemUnderTest.GetAppointments(null, null);
+            //Assert
+            Assert.IsType<List<Appointment>>(result);
+            Assert.Equal(0, result.Count);
+        }
+        [Fact]
         public void GetAppointmentById_WhenCalled_ReturnsAppointment()
         {
             //Act
