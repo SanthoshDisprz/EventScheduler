@@ -120,25 +120,24 @@ namespace DisprzTraining.Business
         }
         public bool UpdateAppointment(Guid id, AddAppointment appointment)
         {
-            if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
-            else if (appointment.StartTime == null || appointment.EndTime == null) throw new Exception("Both Start time and End time are mandatory for updating appointments");
-            else if (appointment.StartTime.Value == appointment.EndTime.Value) throw new Exception("Appointment Start time and End time should not be same");
-
             var currentDateAndTime = DateTime.UtcNow;
-            var appointmentStartDateAndTime = appointment.StartTime;
-            if (appointmentStartDateAndTime < currentDateAndTime)
-            {
-                throw new Exception("Cannot Update Appointment to Past time");
-            }
-
             var appointmentToBeUpdated = _appointmentsDAL.GetAppointmentById(id);
             if (appointmentToBeUpdated == null)
             {
                 return false;
             }
-            else if (appointmentToBeUpdated.StartTime < currentDateAndTime) throw new Exception("Cannot Update Past Appointment");
-            _appointmentsDAL.UpdateAppointment(appointmentToBeUpdated, appointment);
-            return true;
+
+            else if (appointmentToBeUpdated.StartTime.Value < currentDateAndTime) throw new Exception("Cannot Update Past Appointment");
+
+            if (appointment.StartTime < currentDateAndTime)
+            {
+                throw new Exception("Cannot Update Appointment to Past time");
+            }
+            else if (appointment.StartTime > appointment.EndTime) throw new Exception("Appointment Start time should be greater than End time");
+            else if (appointment.StartTime == null || appointment.EndTime == null) throw new Exception("Both Start time and End time are mandatory for updating appointments");
+            else if (appointment.StartTime.Value == appointment.EndTime.Value) throw new Exception("Appointment Start time and End time should not be same");
+            return _appointmentsDAL.UpdateAppointment(appointmentToBeUpdated, appointment);
+
         }
 
 

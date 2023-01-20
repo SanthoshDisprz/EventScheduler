@@ -531,6 +531,7 @@ namespace DisprzTraining.Tests.UnitTests
             var testItem = new Appointment() { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = DateTime.Now, EndTime = DateTime.Now.AddHours(1) };
             var UpdateTestItem = new AddAppointment() { Description = "sss", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 12, 10, 10) };
             var systemUnderTest = new AppointmentsBL(Mock.Object);
+            Mock.Setup(service => service.GetAppointmentById(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"))).Returns(testItem);
             Mock.Setup(service => service.UpdateAppointment(testItem, UpdateTestItem)).Returns(true);
 
             //Act and Assert
@@ -577,7 +578,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
-            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 10, 10, 10) };
+            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2025, 10, 10, 10, 10, 10), EndTime = new DateTime(2025, 10, 10, 11, 10, 10) };
             var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = "sss", StartTime = new DateTime(2023, 10, 10, 10, 10, 10), EndTime = new DateTime(2023, 10, 10, 10, 10, 10) };
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             Mock.Setup(service => service.UpdateAppointment(testItem, UpdatedTestItem)).Returns(true);
@@ -592,7 +593,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
-            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 10, 10, 10) };
+            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2025, 10, 10, 10, 10, 10), EndTime = new DateTime(2025, 10, 11, 10, 10, 10) };
             var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = "sss", StartTime = null, EndTime = null };
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             Mock.Setup(service => service.UpdateAppointment(testItem, UpdatedTestItem)).Returns(true);
@@ -607,7 +608,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
-            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 10, 10, 10) };
+            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2025, 10, 10, 10, 10, 10), EndTime = new DateTime(2025, 10, 10, 11, 10, 10) };
             var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = "sss", StartTime = new DateTime(2023, 10, 10, 11, 10, 10), EndTime = new DateTime(2023, 10, 10, 10, 10, 10) };
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             Mock.Setup(service => service.UpdateAppointment(testItem, UpdatedTestItem)).Returns(true);
@@ -622,7 +623,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
-            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 10, 10, 10) };
+            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2025, 10, 10, 10, 10, 10), EndTime = new DateTime(2025, 10, 10, 11, 10, 10) };
             var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = "sss", StartTime = null, EndTime = new DateTime(2023, 10, 10, 10, 10, 10) };
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             Mock.Setup(service => service.UpdateAppointment(testItem, UpdatedTestItem)).Returns(true);
@@ -637,7 +638,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
-            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 10, 10, 10) };
+            var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2023, 10, 10, 10, 10, 10), EndTime = new DateTime(2023, 10, 11, 10, 10, 10) };
             var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = "sss", EndTime = null, StartTime = new DateTime(2023, 10, 10, 10, 10, 10) };
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             Mock.Setup(service => service.UpdateAppointment(testItem, UpdatedTestItem)).Returns(true);
