@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DisprzTraining.Data;
-using Appointments;
+// using Appointments;
 using DisprzTraining.Models;
 
 namespace DisprzTraining.DataAccess
@@ -15,9 +15,9 @@ namespace DisprzTraining.DataAccess
             return AppointmentsStore.AppointmentList;
         }
 
-        public List<Appointment> GetAppointments(DateTime? startTime, DateTime? endTime)
+        public List<Appointment> GetAppointments(DateTime startTime, DateTime endTime)
         {
-            return AppointmentsStore.AppointmentList.Where(appointment => appointment.StartTime >= startTime && appointment.EndTime <= endTime).ToList();
+            return AppointmentsStore.AppointmentList.Where(appointment => appointment.StartTime.Value >= startTime && appointment.StartTime.Value <= endTime).ToList();
         }
         public Appointment GetAppointmentById(Guid id)
         {
@@ -56,6 +56,10 @@ namespace DisprzTraining.DataAccess
             appointmentToBeUpdated.GuestsList = appointment.GuestsList;
             appointmentToBeUpdated.Location = appointment.Location;
             return true;
+        }
+        public List<Appointment> GetAppointmentsByTitle(string title)
+        {
+                return AppointmentsStore.AppointmentList.Where(appointment => appointment.Title.ToLower().Contains(title.ToLower())).OrderBy(appointment => appointment.StartTime).ToList();
         }
     }
 }

@@ -1,4 +1,5 @@
-using Appointments;
+// using Appointments;
+using DisprzTraining.Models;
 using System;
 
 namespace DisprzTraining.Tests

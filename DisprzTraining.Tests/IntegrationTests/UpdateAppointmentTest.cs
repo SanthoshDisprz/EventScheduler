@@ -8,7 +8,8 @@ using FluentAssertions;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
-using Appointments;
+// using Appointments;
+using DisprzTraining.Models;
 using System.Text;
 
 namespace DisprzTraining.Tests.IntegrationTests
@@ -21,6 +22,9 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             _factory = factory;
         }
+
+        //Update appointment Passing test case
+        
         [Fact]
         public async Task UpdateAppointment_ReturnSuccess_AndCorrectContentType()
         {
@@ -28,7 +32,6 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-                Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"),
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 EndTime = new DateTime(2024, 11, 10, 11, 10, 10, 10),
@@ -42,6 +45,9 @@ namespace DisprzTraining.Tests.IntegrationTests
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
+
+        //Update appointment Failing test cases
+
         [Fact]
         public async Task UpdateAppointment_WhenStartTimeAndEndTimeAreSame_ReturnsBadRequest()
         {
@@ -49,7 +55,6 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-                Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"),
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 EndTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
@@ -69,7 +74,6 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-                Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"),
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 14, 10, 10, 10),
                 EndTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
@@ -89,7 +93,6 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-                Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"),
                 Title = "test",
                 StartTime = null,
                 EndTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
@@ -109,7 +112,6 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-                Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"),
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 EndTime = null,
@@ -129,7 +131,6 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-                Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"),
                 Title = "test",
                 StartTime = null,
                 EndTime = null,
@@ -149,7 +150,6 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-                Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247471"),
                 Title = "test",
                 StartTime = new DateTime(2021, 11, 10, 10, 10, 10, 10),
                 EndTime = new DateTime(2021, 11, 10, 11, 10, 10, 10),
@@ -169,7 +169,6 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-                Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04241351"),
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 EndTime = new DateTime(2024, 11, 10, 11, 10, 10, 10),
@@ -189,7 +188,6 @@ namespace DisprzTraining.Tests.IntegrationTests
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-                Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"),
                 Title = "test",
                 StartTime = new DateTime(2025, 08, 26, 05, 06, 07),
                 EndTime = new DateTime(2025, 08, 26, 05, 26, 07),

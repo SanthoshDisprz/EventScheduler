@@ -7,7 +7,8 @@ using System.Net;
 using FluentAssertions;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Appointments;
+// using Appointments;
+using DisprzTraining.Models;
 using System.Text;
 
 namespace DisprzTraining.Tests.IntegrationTests
@@ -20,6 +21,7 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             _factory = factory;
         }
+        //Delete appointment Passing test case
         [Fact]
         public async Task DeleteAppointment_ReturnSuccess()
         {
@@ -31,6 +33,7 @@ namespace DisprzTraining.Tests.IntegrationTests
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
+        //Delete appointment Failing test cases
         [Fact]
         public async Task DeleteAppointment_WhenTriedToDeletePastAppointment_ReturnsBadRequest()
         {

@@ -2,7 +2,7 @@
 // using DisprzTraining.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using Appointments;
+// using Appointments;
 using DisprzTraining.Data;
 using System.Threading.Tasks;
 using DisprzTraining.Models;
@@ -25,11 +25,26 @@ namespace DisprzTraining.Controllers
         [HttpGet(Name = "Get Appointments")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Appointment>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public IActionResult GetAppointments([FromQuery(Name = "from")] DateTime? startTime, [FromQuery(Name = "to")] DateTime? endTime, [FromQuery] int timeZoneOffset)
+        public IActionResult GetAppointments([FromQuery] GetAppointmentsQueryParameters getAppointmentsParameters)
         {
             try
             {
-                var appointments = _appointmentsBL.GetAppointments(startTime, endTime, timeZoneOffset);
+                var appointments = _appointmentsBL.GetAppointments(getAppointmentsParameters.From, getAppointmentsParameters.To, getAppointmentsParameters.TimeZoneOffset);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
+            }
+        }
+        [HttpGet("search")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        public IActionResult GetAppointmentsByTitle([FromQuery] SearchAppointmentQueryParameters parameters)
+        {
+            try
+            {
+                var appointments = _appointmentsBL.GetAppointmentsByTitle(parameters.Title, parameters.PageNumber, parameters.PageSize, parameters.TimeZoneOffset);
                 return Ok(appointments);
             }
             catch (Exception ex)

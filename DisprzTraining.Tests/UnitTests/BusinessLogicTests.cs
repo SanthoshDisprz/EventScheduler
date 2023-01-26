@@ -6,7 +6,7 @@ using Xunit;
 using DisprzTraining.Controllers;
 using Moq;
 using DisprzTraining.Business;
-using Appointments;
+// using Appointments;
 using Microsoft.AspNetCore.Mvc;
 using DisprzTraining.Data;
 using FluentAssertions;
@@ -28,7 +28,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
-            Mock.Setup(service => service.GetAppointments(null, null)).Returns(new List<Appointment>());
+            // Mock.Setup(service => service.GetAppointments(null, null)).Returns(new List<Appointment>());
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act and Assert
             var ex = Assert.Throws<Exception>(() => systemUnderTest.GetAppointments(null, null, 0));
@@ -39,7 +39,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
-            Mock.Setup(service => service.GetAppointments(null, new DateTime(2021, 10, 10, 12, 10, 10))).Returns(new List<Appointment>());
+            // Mock.Setup(service => service.GetAppointments(null, new DateTime(2021, 10, 10, 12, 10, 10))).Returns(new List<Appointment>());
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act and Assert
             var ex = Assert.Throws<Exception>(() => systemUnderTest.GetAppointments(null, new DateTime(2021, 10, 10, 12, 10, 10), 0));
@@ -50,7 +50,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
-            Mock.Setup(service => service.GetAppointments(new DateTime(2021, 10, 10, 12, 10, 10), null)).Returns(new List<Appointment>());
+            // Mock.Setup(service => service.GetAppointments(new DateTime(2021, 10, 10, 12, 10, 10), null)).Returns(new List<Appointment>());
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act and Assert
             var ex = Assert.Throws<Exception>(() => systemUnderTest.GetAppointments(new DateTime(2021, 10, 10, 12, 10, 10), null, 0));
@@ -121,6 +121,8 @@ namespace DisprzTraining.Tests.UnitTests
             //Assert
             // result.Should().BeEquivalentTo(appointmentsInLocalTimeStamp);
             Assert.IsType<List<Appointment>>(result);
+            Assert.Equal(testItem[0]?.StartTime?.AddMinutes(-timeZoneOffset), result[0]?.StartTime);
+            Assert.Equal(testItem[0]?.EndTime?.AddMinutes(-timeZoneOffset), result[0]?.EndTime);
         }
         //Create appointment conflict check - Failing test cases
 
@@ -249,10 +251,25 @@ namespace DisprzTraining.Tests.UnitTests
 
             //Act and Assert
             var ex = Assert.Throws<Exception>(() => systemUnderTest.CreateAppointment(testItem));
-            Assert.Equal("Appointment Start time should be greater than End time", ex.Message);
+            Assert.Equal("End time should be greater than Start time", ex.Message);
 
 
         }
+        // [Fact]
+        // public void CreateAppointment_WhenTitlePassedAsNullOrEmptyString_ThrowsException()
+        // {
+        //     //Arrange
+        //     var Mock = new Mock<IAppointmentsDAL>();
+        //     var testItem = new AddAppointment() { Description = "kkk", Title = null, StartTime = new DateTime(2023, 09, 10, 20, 10, 10), EndTime = new DateTime(2023, 09, 11, 20, 10, 10) };
+        //     Mock.Setup(service => service.CreateAppointment(testItem)).Returns(true);
+        //     var systemUnderTest = new AppointmentsBL(Mock.Object);
+
+        //     //Act and Assert
+        //     var ex = Assert.Throws<Exception>(() => systemUnderTest.CreateAppointment(testItem));
+        //     Assert.Equal("Appointment title is mandatory", ex.Message);
+
+
+        // }
         [Fact]
         public void CreateAppointment_WhenAppointmentStartTimeAndEndTimeAreSame_ThrowsException()
         {
@@ -355,7 +372,7 @@ namespace DisprzTraining.Tests.UnitTests
         {
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
-            var testItem = new AddAppointment() { Description = "kkk", Title = "sss", StartTime = DateTime.UtcNow.AddMonths(1), EndTime = DateTime.UtcNow.AddMonths(1).AddHours(1) };
+            var testItem = new AddAppointment() { Description = "kkk", Title = "sss", StartTime = DateTime.UtcNow.AddMonths(1), EndTime = DateTime.UtcNow.AddMonths(1).AddHours(1), GuestsList = new List<string>() { "santhoshoct31@gmail.com" } };
             Mock.Setup(service => service.CreateAppointment(testItem)).Returns(true);
             Mock.Setup(service => service.GetAllAppointments()).Returns(new List<Appointment>());
             var systemUnderTest = new AppointmentsBL(Mock.Object);
@@ -365,6 +382,45 @@ namespace DisprzTraining.Tests.UnitTests
             Assert.True(result);
 
 
+        }
+        //Email validator -Passing test case
+        [Fact]
+        public void IsValidMailId_ValidMailIdPassed_ReturnsTrue()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsDAL>();
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
+            var testItem = "santhoshoct31@gmail.com";
+            //Act
+            var result = systemUnderTest.IsValidMailId(testItem);
+            //Assert
+            Assert.True(result);
+        }
+        //Email validator -Failing test case
+        [Fact]
+        public void IsValidMailId_InValidMailIdPassed_ReturnsTrue()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsDAL>();
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
+            var testItem = "santhosh";
+            //Act
+            var result = systemUnderTest.IsValidMailId(testItem);
+            //Assert
+            Assert.False(result);
+        }
+        //Send email - Test case
+        [Fact]
+        public void SendEmail_WhenGuestListPassed_ExecutedSuccessfully()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsDAL>();
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
+            var testItem = new List<string>() { "santhoshoct31@gmail.com" };
+            //Act
+            var result = systemUnderTest.SendEmail(testItem, "test", DateTime.UtcNow, DateTime.UtcNow.AddHours(1));
+            //Assert
+            Assert.True(result);
         }
 
         //Delete appointment - Failing test cases
@@ -391,7 +447,7 @@ namespace DisprzTraining.Tests.UnitTests
             var Mock = new Mock<IAppointmentsDAL>();
             var testItem = new Appointment() { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"), Description = "kkk", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 12, 10, 10) };
             var systemUnderTest = new AppointmentsBL(Mock.Object);
-            Mock.Setup(service => service.GetAllAppointments()).Returns(new List<Appointment>() { new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"), Description = "kkk", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 12, 10, 10) } });
+            Mock.Setup(service => service.GetAppointmentById(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"))).Returns(new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"), Description = "kkk", Title = "sss", StartTime = new DateTime(2021, 10, 10, 10, 10, 10), EndTime = new DateTime(2021, 10, 10, 12, 10, 10) });
             Mock.Setup(service => service.DeleteAppointment(testItem)).Returns(true);
 
 
@@ -408,7 +464,7 @@ namespace DisprzTraining.Tests.UnitTests
             var Mock = new Mock<IAppointmentsDAL>();
             var testItem = new Appointment() { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = DateTime.Now.AddHours(1), EndTime = DateTime.Now.AddHours(2) };
             var systemUnderTest = new AppointmentsBL(Mock.Object);
-            Mock.Setup(service => service.GetAllAppointments()).Returns(new List<Appointment>() { new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2099, 10, 10, 12, 10, 10), EndTime = new DateTime(2099, 10, 10, 13, 10, 10) } });
+            Mock.Setup(service => service.GetAppointmentById(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"))).Returns(new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2099, 10, 10, 12, 10, 10), EndTime = new DateTime(2099, 10, 10, 13, 10, 10) });
             Mock.Setup(service => service.DeleteAppointment(testItem)).Returns(true);
             //Act
 
@@ -538,7 +594,7 @@ namespace DisprzTraining.Tests.UnitTests
             var ex = Assert.Throws<Exception>(() => systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), UpdateTestItem));
             Assert.Equal("Cannot Update Appointment to Past time", ex.Message);
         }
-        
+
         [Fact]
         public void UpdateAppointment_WhenTriedToUpdatePastAppointment_ThrowsException()
         {
@@ -561,7 +617,7 @@ namespace DisprzTraining.Tests.UnitTests
             //Arrange
             var Mock = new Mock<IAppointmentsDAL>();
             var postTestItem = new Appointment() { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = DateTime.Now, EndTime = DateTime.Now.AddHours(1) };
-            var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = "sss", StartTime = DateTime.Now, EndTime = DateTime.Now.AddHours(1) };
+            var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = "sss", StartTime = DateTime.Now, EndTime = DateTime.Now.AddHours(1), GuestsList = new List<string>() { "santhoshoct31@gmail.com" } };
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             Mock.Setup(service => service.GetAppointmentById(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"))).Returns(postTestItem);
             Mock.Setup(service => service.UpdateAppointment(postTestItem, UpdatedTestItem)).Returns(true);
@@ -588,6 +644,21 @@ namespace DisprzTraining.Tests.UnitTests
             var ex = Assert.Throws<Exception>(() => systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), UpdatedTestItem));
             Assert.Equal("Appointment Start time and End time should not be same", ex.Message);
         }
+        //         [Fact]
+        // public void UpdateAppointment_WhenTitleIsNull_ThrowsException()
+        // {
+        //     //Arrange
+        //     var Mock = new Mock<IAppointmentsDAL>();
+        //     var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2025, 10, 10, 10, 10, 10), EndTime = new DateTime(2025, 10, 10, 11, 10, 10) };
+        //     var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = null, StartTime = new DateTime(2023, 10, 10, 10, 10, 10), EndTime = new DateTime(2023, 10, 10, 10, 10, 10) };
+        //     var systemUnderTest = new AppointmentsBL(Mock.Object);
+        //     Mock.Setup(service => service.UpdateAppointment(testItem, UpdatedTestItem)).Returns(true);
+        //     Mock.Setup(service => service.GetAppointmentById(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"))).Returns(testItem);
+
+        //     //Act and Assert
+        //     var ex = Assert.Throws<Exception>(() => systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), UpdatedTestItem));
+        //     Assert.Equal("Appointment title is mandatory", ex.Message);
+        // }
         [Fact]
         public void UpdateAppointment_WhenStartTimeAndEndTimeAreNull_ThrowsException()
         {
@@ -616,7 +687,7 @@ namespace DisprzTraining.Tests.UnitTests
 
             //Act and Assert
             var ex = Assert.Throws<Exception>(() => systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), UpdatedTestItem));
-            Assert.Equal("Appointment Start time should be greater than End time", ex.Message);
+            Assert.Equal("End time should be greater than Start time", ex.Message);
         }
         [Fact]
         public void UpdateAppointment_WhenStartTimePassedAsNull_ThrowsException()
@@ -647,6 +718,44 @@ namespace DisprzTraining.Tests.UnitTests
             //Act and Assert
             var ex = Assert.Throws<Exception>(() => systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), UpdatedTestItem));
             Assert.Equal("Both Start time and End time are mandatory for updating appointments", ex.Message);
+        }
+        [Fact]
+        public void GetAppointmentsByTitle_WhenTitlePassedAsNull_ThrowsException()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsDAL>();
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
+            //Act
+            var ex = Assert.Throws<Exception>(() => systemUnderTest.GetAppointmentsByTitle(null, 1, 10, 0));
+            //Assert
+            Assert.Equal("Title cannot be null", ex.Message);
+
+        }
+        [Fact]
+        public void GetAppointmentsByTitle_WhenTitlePassedAndNoResultsFound_ReturnsEmptyPaginatedResponse()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsDAL>();
+            Mock.Setup(service => service.GetAppointmentsByTitle("test")).Returns(new List<Appointment>());
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
+            //Act
+            var result = systemUnderTest.GetAppointmentsByTitle("test", 1, 10, 0);
+            //Assert
+            Assert.IsType<PaginatedResponse>(result);
+
+        }
+        [Fact]
+        public void GetAppointmentsByTitle_WhenTitlePassedAndResultsFound_ReturnsPaginatedResponse()
+        {
+            //Arrange
+            var Mock = new Mock<IAppointmentsDAL>();
+            Mock.Setup(service => service.GetAppointmentsByTitle("test")).Returns(new List<Appointment>() { new Appointment() { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2023, 10, 10, 10, 10, 10), EndTime = new DateTime(2023, 10, 11, 10, 10, 10) } });
+            var systemUnderTest = new AppointmentsBL(Mock.Object);
+            //Act
+            var result = systemUnderTest.GetAppointmentsByTitle("test", 1, 10, 0);
+            //Assert
+            Assert.IsType<PaginatedResponse>(result);
+
         }
 
 

@@ -7,7 +7,7 @@ using System.Net;
 using FluentAssertions;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Appointments;
+// using Appointments;
 using System.Text;
 
 namespace DisprzTraining.Tests.IntegrationTests
@@ -20,6 +20,7 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             _factory = factory;
         }
+        //Get appointments Passing test case
         [Fact]
         public async Task GetAppointments_ReturnSuccess_AndCorrectContentType()
         {
@@ -33,6 +34,7 @@ namespace DisprzTraining.Tests.IntegrationTests
             Assert.Equal("application/json; charset=utf-8",
             response?.Content?.Headers?.ContentType?.ToString());
         }
+        //Get appointments Failing test cases
         [Fact]
         public async Task GetAppointments_WhenFromTimeGreaterThanToTime_ReturnsBadRequest()
         {

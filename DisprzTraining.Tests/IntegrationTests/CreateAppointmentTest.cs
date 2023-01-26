@@ -8,8 +8,10 @@ using FluentAssertions;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
-using Appointments;
+// using Appointments;
+using DisprzTraining.Models;
 using System.Text;
+using System.Net.Http.Json;
 
 namespace DisprzTraining.Tests.IntegrationTests
 {
@@ -21,14 +23,20 @@ namespace DisprzTraining.Tests.IntegrationTests
     {
         _factory = factory;
     }
+
+    //Testing all endpoints
+
+    //Passing test case
        [Fact]
-        public async Task CreateAppointment_ReturnSuccess_AndCorrectContentType()
+        public async Task CreateGetUpdateAndDeleteAppointment_ReturnSuccess_AndCorrectContentType()
         {
+          //Creating an appointment
+
             //Arrange
             var client = _factory.CreateClient();
             var mockData = new Appointment
             {
-              Title="test",
+              Title="Integration test",
               StartTime=new DateTime(2024, 10, 10, 10, 10, 10, 10),
               EndTime=new DateTime(2024, 10, 10, 11, 10, 10, 10),
               Description="test" ,           
@@ -42,7 +50,56 @@ namespace DisprzTraining.Tests.IntegrationTests
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             Assert.Equal("application/json; charset=utf-8", 
             response?.Content?.Headers?.ContentType?.ToString());
+
+          //Getting the created appointment
+
+            //Act
+            var getResponse = await client.GetAsync("api/appointments?from=2024-10-10T09%3A08%3A47.017Z&to=2024-10-10T12%3A12%3A47.017Z&timeZoneOffset=-330");
+            //Assert
+            getResponse.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+            Assert.Equal("application/json; charset=utf-8", 
+            response?.Content?.Headers?.ContentType?.ToString());
+          
+          //Searching the appointment by title
+          //Act
+            var getByTitleresponse = await client.GetAsync("api/appointments/search?title=Integration test&pageNumber=1&pageSize=10&timeZoneOffset=-330");
+            //Assert
+            getByTitleresponse.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.OK, getByTitleresponse.StatusCode);
+            Assert.Equal("application/json; charset=utf-8",
+            response?.Content?.Headers?.ContentType?.ToString());
+
+          //Updating the created appointment
+            var appointmentData = getResponse.Content.ReadFromJsonAsync<List<Appointment>>();
+            var appointmentId = appointmentData?.Result?.Find(x=>x.Title=="Integration test")?.Id;
+
+            var updateMockData = new Appointment
+            {
+                Title = "Update test",
+                StartTime = new DateTime(2026, 11, 10, 10, 10, 10, 10),
+                EndTime = new DateTime(2026, 11, 10, 11, 10, 10, 10),
+                Description = "test"
+            };
+            var serializeUpdateObject = JsonConvert.SerializeObject(updateMockData);
+            var updateObjectStringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+             var updateResponse = await client.PutAsync($"api/appointments/{appointmentId}", updateObjectStringContent);
+            //Assert
+            updateResponse.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+            Assert.Equal("application/json; charset=utf-8", 
+            response?.Content?.Headers?.ContentType?.ToString());
+
+          //Deleting the appointment
+             //Act
+            var deleteResponse = await client.DeleteAsync($"api/appointments/{appointmentId}");
+            //Assert
+            deleteResponse.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+
         }
+
+        //Create appointment - Failing test cases
         [Fact]
         public async Task CreateAppointment_WhenAppointmentConflicts_ReturnsConflictResult()
         {
