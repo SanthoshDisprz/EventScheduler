@@ -1,27 +1,130 @@
-﻿using DisprzTraining.Models;
+﻿using DisprzTraining.Business;
+// using DisprzTraining.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+// using Appointments;
+using DisprzTraining.Data;
+using System.Threading.Tasks;
+using DisprzTraining.Models;
+using Microsoft.AspNetCore.Cors;
+
 
 namespace DisprzTraining.Controllers
 {
-    public class AppointmentsController : Controller
+    [ApiController]
+    [Route("api/appointments")]
+    public class AppointmentsController : ControllerBase
     {
-        public AppointmentsController()
+        private readonly IAppointmentsBL _appointmentsBL;
+        public AppointmentsController(IAppointmentsBL appointmentsBL)
         {
+            _appointmentsBL = appointmentsBL;
         }
 
-        //design - GET /api/appointments
-        //- POST /api/appointments
-        //- DELETE /api/appointments
 
-        //refer hello world controller for BL & DAL logic 
+        [HttpGet(Name = "Get Appointments")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Appointment>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        public IActionResult GetAppointments([FromQuery] GetAppointmentsQueryParameters getAppointmentsParameters)
+        {
+            try
+            {
+                var appointments = _appointmentsBL.GetAppointments(getAppointmentsParameters.From, getAppointmentsParameters.To, getAppointmentsParameters.TimeZoneOffset);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
+            }
+        }
+        [HttpGet("search")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        public IActionResult GetAppointmentsByTitle([FromQuery] SearchAppointmentQueryParameters parameters)
+        {
+            try
+            {
+                var appointments = _appointmentsBL.GetAppointmentsByTitle(parameters.Title, parameters.PageNumber, parameters.PageSize, parameters.TimeZoneOffset);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
+            }
+        }
 
-        //[HttpGet]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Appointment))]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<IActionResult> GerAppointments()
-        //{
-        //    return Ok();
-        //}
+
+        [HttpPost(Name = "Create an Appointment")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        public IActionResult CreateAppointment([FromBody] AddAppointment appointment)
+        {
+            try
+            {
+                var result = _appointmentsBL.CreateAppointment(appointment);
+                if (result)
+                {
+                    return Created("~api/Appointments", true);
+                }
+                return Conflict(new ErrorResponse() { StatusCode = 409, ErrorMessage = "Appointment Conflict Occured." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}", Name = "Remove Appointment")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        public IActionResult DeleteAppointment(Guid id)
+        {
+            try
+            {
+                var result = _appointmentsBL.DeleteAppointment(id);
+                if (result)
+                {
+                    return NoContent();
+                }
+                return NotFound(new ErrorResponse() { StatusCode = 404, ErrorMessage = "The given Id is not found" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
+            }
+
+        }
+
+        [HttpPut("{id}", Name = "Update Appointment")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        public IActionResult UpdateAppointment(Guid id, [FromBody] AddAppointment appointment)
+        {
+            try
+            {
+                var result = _appointmentsBL.UpdateAppointment(id, appointment);
+                if (result)
+                {
+                    var conflict = _appointmentsBL.UpdateAppointmentConflictCheck(id, appointment);
+                    if (conflict)
+                    {
+                        return Conflict(new ErrorResponse() { StatusCode = 409, ErrorMessage = "Appointment Conflict Occured." });
+                    }
+                    return Ok();
+
+                }
+                return NotFound(new ErrorResponse() { StatusCode = 404, ErrorMessage = "The given Id is not found" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse() { StatusCode = 400, ErrorMessage = ex.Message });
+            }
+        }
+
 
     }
 }
