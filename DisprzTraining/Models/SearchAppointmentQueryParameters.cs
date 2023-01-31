@@ -10,7 +10,7 @@ namespace DisprzTraining.Models
     public class SearchAppointmentQueryParameters 
     {
         const int maxPageSize = 100;
-        [BindRequired]
+        [Required]
         public string? Title { get; set; }
         public int PageNumber { get; set; } = 1;
         private int _pageSize { get; set; } = 10;

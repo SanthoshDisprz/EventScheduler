@@ -30,14 +30,14 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             //Arrange
             var client = _factory.CreateClient();
-            var mockData = new Appointment
+            var testData = new Appointment
             {
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 EndTime = new DateTime(2024, 11, 10, 11, 10, 10, 10),
                 Description = "test"
             };
-            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var serializeObject = JsonConvert.SerializeObject(testData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
             var response = await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247471", stringContent);
@@ -53,14 +53,14 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             //Arrange
             var client = _factory.CreateClient();
-            var mockData = new Appointment
+            var testData = new Appointment
             {
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 EndTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 Description = "test"
             };
-            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var serializeObject = JsonConvert.SerializeObject(testData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
             var response = await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247471", stringContent);
@@ -72,14 +72,14 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             //Arrange
             var client = _factory.CreateClient();
-            var mockData = new Appointment
+            var testData = new Appointment
             {
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 14, 10, 10, 10),
                 EndTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 Description = "test"
             };
-            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var serializeObject = JsonConvert.SerializeObject(testData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
             var response = await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247471", stringContent);
@@ -91,14 +91,14 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             //Arrange
             var client = _factory.CreateClient();
-            var mockData = new Appointment
+            var testData = new Appointment
             {
                 Title = "test",
                 StartTime = null,
                 EndTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 Description = "test"
             };
-            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var serializeObject = JsonConvert.SerializeObject(testData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
             var response = await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247471", stringContent);
@@ -110,14 +110,14 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             //Arrange
             var client = _factory.CreateClient();
-            var mockData = new Appointment
+            var testData = new Appointment
             {
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 EndTime = null,
                 Description = "test"
             };
-            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var serializeObject = JsonConvert.SerializeObject(testData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
             var response = await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247471", stringContent);
@@ -129,14 +129,14 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             //Arrange
             var client = _factory.CreateClient();
-            var mockData = new Appointment
+            var testData = new Appointment
             {
                 Title = "test",
                 StartTime = null,
                 EndTime = null,
                 Description = "test"
             };
-            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var serializeObject = JsonConvert.SerializeObject(testData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
             var response = await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247471", stringContent);
@@ -148,14 +148,14 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             //Arrange
             var client = _factory.CreateClient();
-            var mockData = new Appointment
+            var testData = new Appointment
             {
                 Title = "test",
                 StartTime = new DateTime(2021, 11, 10, 10, 10, 10, 10),
                 EndTime = new DateTime(2021, 11, 10, 11, 10, 10, 10),
                 Description = "test"
             };
-            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var serializeObject = JsonConvert.SerializeObject(testData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
             var response = await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247471", stringContent);
@@ -167,14 +167,14 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             //Arrange
             var client = _factory.CreateClient();
-            var mockData = new Appointment
+            var testData = new Appointment
             {
                 Title = "test",
                 StartTime = new DateTime(2024, 11, 10, 10, 10, 10, 10),
                 EndTime = new DateTime(2024, 11, 10, 11, 10, 10, 10),
                 Description = "test"
             };
-            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var serializeObject = JsonConvert.SerializeObject(testData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
             var response = await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04241351", stringContent);
@@ -186,14 +186,14 @@ namespace DisprzTraining.Tests.IntegrationTests
         {
             //Arrange
             var client = _factory.CreateClient();
-            var mockData = new Appointment
+            var testData = new Appointment
             {
                 Title = "test",
                 StartTime = new DateTime(2025, 08, 26, 05, 06, 07),
                 EndTime = new DateTime(2025, 08, 26, 05, 26, 07),
                 Description = "test"
             };
-            var serializeObject = JsonConvert.SerializeObject(mockData);
+            var serializeObject = JsonConvert.SerializeObject(testData);
             var stringContent = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             //Act
             var response = await client.PutAsync("api/appointments/9245fe4a-d402-451c-b9ed-9c1a04247482", stringContent);

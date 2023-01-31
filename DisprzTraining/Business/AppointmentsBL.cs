@@ -111,7 +111,7 @@ namespace DisprzTraining.Business
             if (appointment.StartTime > appointment.EndTime) throw new Exception("End time should be greater than Start time");
             else if (appointment.StartTime < currentTime) throw new Exception("Cannot create appointment for past time");
             else if (appointment.StartTime == null || appointment.EndTime == null) throw new Exception("Both Start time and End time are mandatory for creating appointments");
-            else if (appointment.StartTime.Value == appointment.EndTime.Value) throw new Exception("Appointment Start time and End time should not be same");
+            else if (appointment.StartTime.Value == appointment.EndTime.Value) throw new Exception("Start time and End time should not be same");
             var isConflict = AppointmentConflictCheck(appointment);
             if (isConflict)
             {
@@ -128,7 +128,7 @@ namespace DisprzTraining.Business
         {
             bool isValidAppointmentId = false;
             var appointment = _appointmentsDAL.GetAppointmentById(id);
-            var currentDateAndTime = DateTime.UtcNow;
+            var currentDateAndTime = DateTime.UtcNow.AddMinutes(-1);
             var appointmentStartDateAndTime = appointment?.StartTime;
             if (currentDateAndTime > appointmentStartDateAndTime)
             {
@@ -175,7 +175,7 @@ namespace DisprzTraining.Business
             }
             else if (appointment.StartTime > appointment.EndTime) throw new Exception("End time should be greater than Start time");
             else if (appointment.StartTime == null || appointment.EndTime == null) throw new Exception("Both Start time and End time are mandatory for updating appointments");
-            else if (appointment.StartTime.Value == appointment.EndTime.Value) throw new Exception("Appointment Start time and End time should not be same");
+            else if (appointment.StartTime.Value == appointment.EndTime.Value) throw new Exception("Start time and End time should not be same");
             if (appointment.GuestsList != null)
             {
                 SendEmail(appointment.GuestsList, appointment.Title, appointment.StartTime, appointment.EndTime);

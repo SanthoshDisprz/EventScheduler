@@ -138,14 +138,14 @@ namespace DisprzTraining.Tests.UnitTests
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
             var testItem = new AddAppointment() { Description = "test", Title = "Demo", StartTime = new DateTime(2022, 12, 12, 12, 12, 12), EndTime = new DateTime(2022, 12, 12, 12, 12, 12) };
-            Mock.Setup(x => x.CreateAppointment(testItem)).Throws(new Exception("Appointment Start time and End time should not be same"));
+            Mock.Setup(x => x.CreateAppointment(testItem)).Throws(new Exception("Start time and End time should not be same"));
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var exceptionResult = systemUnderTest.CreateAppointment(testItem);
             var badRequestResult = (BadRequestObjectResult)exceptionResult;
             //Assert
             Assert.IsType<BadRequestObjectResult>(badRequestResult);
-            badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Appointment Start time and End time should not be same" });
+            badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Start time and End time should not be same" });
         }
         [Fact]
         public void CreateAppointment_WhenAppointmentStartTimeGreaterThanEndTime_ReturnsBadRequest()
@@ -313,14 +313,14 @@ namespace DisprzTraining.Tests.UnitTests
             //Arrange
             var Mock = new Mock<IAppointmentsBL>();
             var testItem = new AddAppointment() { Description = "test", Title = "Demo", StartTime = new DateTime(2022, 12, 12, 12, 12, 12), EndTime = new DateTime(2022, 12, 12, 12, 12, 12) };
-            Mock.Setup(x => x.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"), testItem)).Throws(new Exception("Appointment Start time and End time should not be same"));
+            Mock.Setup(x => x.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"), testItem)).Throws(new Exception("Start time and End time should not be same"));
             var systemUnderTest = new AppointmentsController(Mock.Object);
             //Act
             var exceptionResult = systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247481"), testItem);
             var badRequestResult = (BadRequestObjectResult)exceptionResult;
             //Assert
             Assert.IsType<BadRequestObjectResult>(badRequestResult);
-            badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Appointment Start time and End time should not be same" });
+            badRequestResult.Value.Should().BeEquivalentTo(new ErrorResponse() { StatusCode = 400, ErrorMessage = "Start time and End time should not be same" });
         }
         [Fact]
         public void UpdateAppointment_WhenAppointmentStartTimeGreaterThanEndTime_ReturnsBadRequest()

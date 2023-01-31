@@ -255,21 +255,7 @@ namespace DisprzTraining.Tests.UnitTests
 
 
         }
-        // [Fact]
-        // public void CreateAppointment_WhenTitlePassedAsNullOrEmptyString_ThrowsException()
-        // {
-        //     //Arrange
-        //     var Mock = new Mock<IAppointmentsDAL>();
-        //     var testItem = new AddAppointment() { Description = "kkk", Title = null, StartTime = new DateTime(2023, 09, 10, 20, 10, 10), EndTime = new DateTime(2023, 09, 11, 20, 10, 10) };
-        //     Mock.Setup(service => service.CreateAppointment(testItem)).Returns(true);
-        //     var systemUnderTest = new AppointmentsBL(Mock.Object);
 
-        //     //Act and Assert
-        //     var ex = Assert.Throws<Exception>(() => systemUnderTest.CreateAppointment(testItem));
-        //     Assert.Equal("Appointment title is mandatory", ex.Message);
-
-
-        // }
         [Fact]
         public void CreateAppointment_WhenAppointmentStartTimeAndEndTimeAreSame_ThrowsException()
         {
@@ -281,7 +267,7 @@ namespace DisprzTraining.Tests.UnitTests
 
             //Act and Assert
             var ex = Assert.Throws<Exception>(() => systemUnderTest.CreateAppointment(testItem));
-            Assert.Equal("Appointment Start time and End time should not be same", ex.Message);
+            Assert.Equal("Start time and End time should not be same", ex.Message);
 
         }
         [Fact]
@@ -531,7 +517,6 @@ namespace DisprzTraining.Tests.UnitTests
                 StartTime = DateTime.UtcNow.AddDays(2).AddHours(3)
             }
             };
-            // Mock.Setup(service => service.UpdateAppointment(postTestItem)).Returns(true);
             Mock.Setup(service => service.GetAllAppointments()).Returns(getTestItem);
             var systemUnderTest = new AppointmentsBL(Mock.Object);
             //Act
@@ -642,23 +627,9 @@ namespace DisprzTraining.Tests.UnitTests
 
             //Act and Assert
             var ex = Assert.Throws<Exception>(() => systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), UpdatedTestItem));
-            Assert.Equal("Appointment Start time and End time should not be same", ex.Message);
+            Assert.Equal("Start time and End time should not be same", ex.Message);
         }
-        //         [Fact]
-        // public void UpdateAppointment_WhenTitleIsNull_ThrowsException()
-        // {
-        //     //Arrange
-        //     var Mock = new Mock<IAppointmentsDAL>();
-        //     var testItem = new Appointment { Id = new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), Description = "kkk", Title = "sss", StartTime = new DateTime(2025, 10, 10, 10, 10, 10), EndTime = new DateTime(2025, 10, 10, 11, 10, 10) };
-        //     var UpdatedTestItem = new AddAppointment() { Description = "sss", Title = null, StartTime = new DateTime(2023, 10, 10, 10, 10, 10), EndTime = new DateTime(2023, 10, 10, 10, 10, 10) };
-        //     var systemUnderTest = new AppointmentsBL(Mock.Object);
-        //     Mock.Setup(service => service.UpdateAppointment(testItem, UpdatedTestItem)).Returns(true);
-        //     Mock.Setup(service => service.GetAppointmentById(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"))).Returns(testItem);
 
-        //     //Act and Assert
-        //     var ex = Assert.Throws<Exception>(() => systemUnderTest.UpdateAppointment(new Guid("9245fe4a-d402-451c-b9ed-9c1a04247482"), UpdatedTestItem));
-        //     Assert.Equal("Appointment title is mandatory", ex.Message);
-        // }
         [Fact]
         public void UpdateAppointment_WhenStartTimeAndEndTimeAreNull_ThrowsException()
         {
